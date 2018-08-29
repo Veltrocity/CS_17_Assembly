@@ -1,0 +1,665 @@
+#if( ! @defined( stdout_hhf ));
+?stdout_hhf := true;
+
+
+#includeOnce( "hla.hhf" )
+#includeOnce( "stdio.hhf" )
+
+/************************************************************************/
+/*                                                                      */
+/* 	The stdout Namespace:                                               */
+/*                                                                      */
+/************************************************************************/
+
+
+namespace stdout; @fast;
+
+
+
+	procedure handle; 
+		@returns( "eax" ); 
+		@external( "STDOUT_GETSTDOUTHANDLE" );
+
+	procedure write( var buffer:byte; count:dword ); 
+		@external( "STDOUT_WRITE" );
+	
+	procedure putbool( b:boolean ); 	
+			@external( "STDOUT_PUTBOOL" );
+
+	procedure putcset( cst:cset   ); 	
+			@external( "STDOUT_PUTCSET_" );
+
+	procedure putc( c:char ); 		
+		@external( "STDOUT_PUTC" );
+
+	procedure putcSize( c:char; width:int32; fill:char );
+		@external( "STDOUT_PUTCSIZE" );
+
+	procedure newln; @external( "STDOUT_NEWLN" );
+
+	procedure puts( s:string  ); 
+		@external( "STDOUT_PUTS" );
+
+	procedure putsSize
+	( 
+		s:string; 
+		width:int32; 
+		fill:char 
+	);	@external( "STDOUT_PUTSSIZE" );
+
+
+	procedure putb( h:byte    );		@external( "STDOUT_PUTB" );
+	procedure putw( w:word 	  ); 		@external( "STDOUT_PUTW" );
+	procedure putd( dw:dword ); 		@external( "STDOUT_PUTD" );
+	procedure putq( qw:qword ); 		@external( "STDOUT_PUTQ" );
+	procedure puttb( tb:tbyte ); 		@external( "STDOUT_PUTTB" );
+	procedure putl( l:lword ); 			@external( "STDOUT_PUTL" );
+
+	procedure putbSize
+	( 
+		b:byte; 
+		width:int32; 
+		fill:char 
+	); @external( "STDOUT_PUTBSIZE" );
+
+	procedure putwSize
+	( 
+		w:word; 
+		width:int32; 
+		fill:char 
+	); @external( "STDOUT_PUTWSIZE" );
+
+
+	procedure putdSize
+	( 
+		d:dword; 
+		width:int32; 
+		fill:char 
+	); @external( "STDOUT_PUTDSIZE" );
+
+	procedure putqSize
+	( 
+		q:qword; 
+		width:int32; 
+		fill:char 
+	); @external( "STDOUT_PUTQSIZE" );
+
+	procedure putlSize
+	( 
+		l:lword; 
+		width:int32; 
+		fill:char 
+	); @external( "STDOUT_PUTLSIZE" );
+
+
+	procedure puti8  ( b:byte  ); 		@external( "STDOUT_PUTI8" );
+	procedure puti16 ( w:word  ); 		@external( "STDOUT_PUTI16" );
+	procedure puti32 ( d:dword ); 		@external( "STDOUT_PUTI32" );
+	procedure puti64 ( q:qword ); 		@external( "STDOUT_PUTI64" );
+	procedure puti128( l:lword ); 		@external( "STDOUT_PUTI128" );
+
+	procedure puti8Size 
+	( 
+		b:byte;  
+		width:int32;	
+		fill:char 
+	); @external( "STDOUT_PUTI8SIZE" );
+
+	procedure puti16Size
+	( 
+		w:word;  
+		width:int32;	
+		fill:char 
+	); @external( "STDOUT_PUTI16SIZE" );
+
+	procedure puti32Size
+	( 
+		d:dword; 
+		width:int32;	
+		fill:char 
+	); @external( "STDOUT_PUTI32SIZE" );
+
+	procedure puti64Size
+	( 
+		q:qword; 
+		width:int32; 
+		fill:char 
+	); @external( "STDOUT_PUTI64SIZE" );
+
+	procedure puti128Size
+	( 
+		l:lword; 
+		width:int32; 
+		fill:char 
+	); @external( "STDOUT_PUTI128SIZE" );
+
+
+
+	procedure putu8 ( b:byte  ); @external( "STDOUT_PUTU8" );
+	procedure putu16( w:word  ); @external( "STDOUT_PUTU16" );
+	procedure putu32( d:dword ); @external( "STDOUT_PUTU32" );
+	procedure putu64( q:qword ); @external( "STDOUT_PUTU64" );
+	procedure putu128( l:lword ); @external( "STDOUT_PUTU128" );
+
+
+	procedure putu8Size 
+	( 
+		b:byte;  
+		width:int32;	
+		fill:char 
+	); @external( "STDOUT_PUTU8SIZE" );
+
+	procedure putu16Size
+	( 
+		w:word;  
+		width:int32;	
+		fill:char 
+	); @external( "STDOUT_PUTU16SIZE" );
+
+	procedure putu32Size
+	( 
+		d:dword; 
+		width:int32;	
+		fill:char 
+	); @external( "STDOUT_PUTU32SIZE" );
+
+	procedure putu64Size
+	( 
+		q:qword; 
+		width:int32;	
+		fill:char 
+	); @external( "STDOUT_PUTU64SIZE" );
+
+	procedure putu128Size
+	( 
+		l:lword; 
+		width:int32;	
+		fill:char 
+	); @external( "STDOUT_PUTU128SIZE" );
+
+
+
+
+	procedure putr80
+	( 
+		r:real80; 
+		width:uns32; 
+		decpts:uns32 
+	); @external( "STDOUT_PUTR80" );
+
+	procedure putr64
+	( 
+		r:real64; 
+		width:uns32; 
+		decpts:uns32 
+	); @external( "STDOUT_PUTR64" );
+
+	procedure putr32
+	( 
+		r:real32; 
+		width:uns32; 
+		decpts:uns32 
+	); @external( "STDOUT_PUTR32" );
+
+	procedure putr80pad
+	( 
+		r:real80; 
+		width:uns32; 
+		decpts:uns32; 
+		pad:char 
+	); @external( "STDOUT_PUTR80PAD" );
+
+	procedure putr64pad
+	( 
+		r:real64; 
+		width:uns32; 
+		decpts:uns32; 
+		pad:char 
+	); @external( "STDOUT_PUTR64PAD" );
+
+	procedure putr32pad
+	( 
+		r:real32; 
+		width:uns32; 
+		decpts:uns32; 
+		pad:char 
+	); @external( "STDOUT_PUTR32PAD" );
+
+
+	procedure pute80( r:real80; width:uns32 ); 
+			@external( "STDOUT_PUTE80" );
+
+	procedure pute64( r:real64; width:uns32 ); 
+			@external( "STDOUT_PUTE64" );
+
+	procedure pute32( r:real32; width:uns32 ); 
+			@external( "STDOUT_PUTE32" );
+
+
+
+
+
+
+
+
+
+	#macro _put_( _routine_, _typename_ ):
+							_func_, sizeParms, _realsize_, _typ_;
+
+		?_func_:string := @string:_routine_;
+		?sizeParms:string := "";
+		?_typ_:string := @string:_typename_;
+
+		// Real values allow two size parameters (width & decpts).
+
+		#if( @substr( _typ_, 0, 4 ) = "real" )
+
+			// Note: on entry, typename = real32, real64, or real80 and
+			// routine = putr32, putr64, putr80, fputr32, fputr64, or
+			// fputr80.
+
+			?_realsize_:string := @substr( _typ_, 4, 2 );
+			#if( _width_ <> "-1" )
+
+
+				// If decpts is <> -1, print in dec notation,
+				// else print in sci notation.
+
+				#if( _decpts_ <> "-1" )
+
+					?sizeParms:string := "," + _width_ + "," + _decpts_;
+					
+				#else
+				 
+					?_func_:string := "stdout.pute" + _realsize_;
+					?sizeParms:string := "," + _width_;
+
+				#endif
+
+			#else
+
+				// If the user did not specify a format size,
+				// then use the puteXX routines with default
+				// sizes of: real32=15, real64=22, real80=28.
+
+				?_func_:string := "stdout.pute" + _realsize_;
+				#if( _realsize_ = "32" )
+
+					?sizeParms:string := ",15";
+
+				#elseif( _realsize_ = "64" )
+
+					?sizeParms:string := ",20";
+
+				#else
+
+					?sizeParms:string := ",23";
+
+				#endif
+
+			#endif
+
+		#else //It's not a real type.
+
+			#if( _decpts_ <> "-1" )
+
+				#error
+				( 
+					"Fractional width specification is not supported here" 
+				)
+
+			#elseif( _width_ <> "-1" )
+
+				// Width specifications are only supported for
+				// certain types.  Check for that here.
+
+				#if
+				(
+						_typ_ <> "uns8"
+					&	_typ_ <> "uns16"
+					&	_typ_ <> "uns32"
+					&	_typ_ <> "uns64"
+					&	_typ_ <> "uns128"
+					&	_typ_ <> "int8"
+					&	_typ_ <> "int16"
+					&	_typ_ <> "int32"
+					&	_typ_ <> "int64"
+					&	_typ_ <> "int128"
+					&	_typ_ <> "char"
+					&	_typ_ <> "string"
+					&	_typ_ <> "byte"
+					&	_typ_ <> "word"
+					&	_typ_ <> "dword"
+					&	_typ_ <> "qword"
+					&	_typ_ <> "lword"
+				)
+
+					#error
+					( 
+						"Type " + 
+						_typ_ + 
+						" does not support width format option" 
+					)
+
+				#else
+
+					?_func_:string := _func_ + "Size";
+					?sizeParms:string := "," + _width_ + ", ' '";
+
+				#endif
+
+			#endif
+
+		#endif
+					
+
+		#if
+		( 
+				@isconst( @text( _arg_ )) 
+			&	_typ_ = "string"
+			&	_arg_ = "#13 #10"
+		)
+			stdout.newln();
+
+		#elseif( @isconst( @text( _arg_ )) )
+
+			@text( _func_ )( @text( _arg_ ) @text( sizeParms ));
+
+		#else
+
+			@text( _func_ )
+				( (type _typename_ @text( _arg_ )) @text( sizeParms ));
+
+		#endif
+
+	#endmacro;
+
+
+	#macro put( _parameters_[] ): 
+		_curparm_, _pType_, _arg_, _width_, 
+		_decpts_, _parmArray_, _id_, _tempid_, _fieldCnt_; //, _saveTrace_;
+
+		// Turn off statement tracing so we don't mess up the
+		// output of this call to stdout.put.
+		
+		//?_saveTrace_ := @trace;
+		//?@trace := false;
+		
+		
+		
+		?_curparm_:uns32 := 0;
+		
+
+		// The following loop repeats once for each PUT parameter
+		// we process.
+
+		#while( _curparm_ < @elements( _parameters_ ))
+
+			// The following stmt frees up any storage
+			// currently in use by parmArray.
+
+			?_parmArray_:uns32 := 0;
+
+			// Get the current parameter into parmArray.
+			// Parameter takes the form:
+			//
+			//	value_to_print : Field_Width : Fractional_Width
+			//
+			// the "Field_Width" and "Fractional_Width" components
+			// are optional (or may not be allowed for certain types).
+			//
+			// The following call to @tokenize puts "value_to_print"
+			// into parmArray[0].  If present, it puts the "Field_Width"
+			// and "Fractional_Width" values into parmArray[1] and
+			// parmArray[2], respectively.
+
+			?_parmArray_ :=	@tokenize
+							(
+								_parameters_[ _curparm_ ],
+								0,
+								{':'},
+								{
+									'"', 
+									'''', 
+									'[', 
+									']', 
+									'(', 
+									')', 
+									'{', 
+									'}' 
+								}
+							);
+			
+			// If this parameter begins with an identifier,
+			// there are some problems to deal with.
+			// The symbol table functions (e.g., @ptype) don't
+			// allow address expression components after the
+			// symbol name.  Named constants, however, do allow
+			// such entities.  The following code determines
+			// (1) is this a symbol?  (2) if it is a symbol, is
+			// it a constant?
+			//
+			//	For non-constant symbols, we need to strip any
+			// trailing non-symbol characters from the string
+			// (e.g., "[0]" ).
+
+			?_arg_ := @trim( _parmArray_[ 0 ], 0 );
+			#if( char( _arg_ ) in stdio._idchars_ )
+
+				// If this parameter begins with an id character,
+				// then strip away any non-ID symbols from the
+				// end of the string.  Then determine if we've
+				// got a constant or some other class (e.g.,
+				// variable or procedure).  If not a constant,
+				// keep only the name.  If a constant, we need
+				// to keep all trailing characters as well.
+
+				?_id_ := stdio._GetID_( _arg_ );
+				#if
+				( 
+						@class( _id_ ) = hla.cConstant 
+					|	@class( _id_ ) = hla.cValue 
+				)
+
+					?_id_ := _arg_;
+
+				#endif
+
+			#else
+
+				// If it's not an ID, we need to keep everything.
+
+				?_id_ := _arg_;
+
+			#endif
+
+			// Okay, determine if the caller supplied a field width
+			// value with this parameter.
+			
+			?_fieldCnt_ := @elements( _parmArray_ );
+			#if( _fieldCnt_ > 1 )
+
+				?_width_ := @trim( _parmArray_[ 1 ], 0 );
+
+			#else
+
+				?_width_ := "-1";		// Default width value.
+
+			#endif
+
+			// Determine if the user supplied a fractional width
+			// value with this parameter.
+
+			#if( _fieldCnt_ > 2 )
+
+				?_decpts_ := @trim( _parmArray_[ 2 ], 0 );
+
+			#else
+
+				?_decpts_ := "-1";	// Default fractional value.
+
+			#endif
+
+			// Quick check to see if the user supplied too many
+			// width fields with this parameter.
+
+			#if( _fieldCnt_ > 3 )
+
+				#error
+				( 
+					"<<" + _parameters_[ _curparm_ ] + ">>" +
+					" has too many width fields" 
+				);
+
+			#endif
+
+			// Determine the type of this parameter so we can
+			// call the appropriate routine to print it.
+
+			?_pType_ := @pType( @text( _id_ ));
+			?_tempid_ := _id_;
+			#while( _pType_ = hla.ptArray )
+
+				?_tempid_ := @typename( @text( _tempid_ ));
+				?_pType_ := @pType( @text( _tempid_ ));
+
+			#endwhile
+
+			// Based on the type, call the appropriate library
+			// routine to print this value.
+
+			#if( _pType_ = hla.ptBoolean ) 
+				stdout._put_( stdout.putbool, boolean )
+
+			#elseif( _pType_ = hla.ptUns8 ) 
+				stdout._put_( stdout.putu8, uns8 )
+
+			#elseif( _pType_ = hla.ptUns16 ) 
+				stdout._put_( stdout.putu16, uns16 )
+
+			#elseif( _pType_ = hla.ptUns32 ) 
+				stdout._put_( stdout.putu32, uns32 )
+
+			#elseif( _pType_ = hla.ptUns64 ) 
+				stdout._put_( stdout.putu64, uns64 )
+
+			#elseif( _pType_ = hla.ptUns128 ) 
+				stdout._put_( stdout.putu128, uns128 )
+
+			#elseif( _pType_ = hla.ptByte ) 
+				stdout._put_( stdout.putb, byte )
+
+			#elseif( _pType_ = hla.ptWord ) 
+				stdout._put_( stdout.putw, word )
+
+			#elseif( _pType_ = hla.ptDWord ) 
+				stdout._put_( stdout.putd, dword )
+
+			#elseif( _pType_ = hla.ptQWord ) 
+				stdout._put_( stdout.putq, qword )
+
+			#elseif( _pType_ = hla.ptLWord ) 
+				stdout._put_( stdout.putl, lword )
+
+			#elseif( _pType_ = hla.ptInt8 ) 
+				stdout._put_( stdout.puti8, int8 )
+
+			#elseif( _pType_ = hla.ptInt16 ) 
+				stdout._put_( stdout.puti16, int16 )
+
+			#elseif( _pType_ = hla.ptInt32 ) 
+				stdout._put_( stdout.puti32, int32 )
+
+			#elseif( _pType_ = hla.ptInt64 ) 
+				stdout._put_( stdout.puti64, int64 )
+
+			#elseif( _pType_ = hla.ptInt128 ) 
+				stdout._put_( stdout.puti128, int128 )
+
+			#elseif( _pType_ = hla.ptChar ) 
+				stdout._put_( stdout.putc, char )
+
+			#elseif( _pType_ = hla.ptCset ) 
+				stdout._put_( stdout.putcset, cset )
+
+			#elseif( _pType_ = hla.ptReal32 ) 
+				stdout._put_( stdout.putr32, real32 )
+
+			#elseif( _pType_ = hla.ptReal64 ) 
+				stdout._put_( stdout.putr64, real64 )
+
+			#elseif( _pType_ = hla.ptReal80 ) 
+				stdout._put_( stdout.putr80, real80 )
+
+			#elseif( _pType_ = hla.ptString )
+				stdout._put_( stdout.puts, string )
+
+			#elseif( @isclass( @text( _parameters_[ _curparm_ ] )))
+
+				#if
+				( 
+					@defined
+					( 
+						@text( _parameters_[ _curparm_ ] + ".toString" )
+					)
+				)
+
+					push( eax );
+					push( esi );
+					push( edi );
+					@text
+					( 
+						_parameters_[ _curparm_ ] + 
+						".toString()"
+					);
+					puts( eax );
+					strfree( eax );
+					pop( edi );
+					pop( esi );
+					pop( eax );
+					
+				#else
+
+					#error
+					(
+						"stdout.put: Class does not provide a toString " +
+						"method or procedure"
+					);
+
+				#endif
+
+			#else
+
+				#error
+				( 
+					"stdout.put: Unknown data type (" +
+					_parameters_[ _curparm_ ] +
+					":" +
+					@typename( @text( _id_ )) +
+					")"
+				);
+
+			#endif
+			?_curparm_ := _curparm_ + 1;
+
+		#endwhile
+
+		// The following is stuck here just to require
+		// that the user end the stdout.put(--) invocation
+		// with a semicolon.
+
+		static
+			;
+		endstatic
+		
+		// Restore the trace flag:
+		
+		//?@trace := _saveTrace_;
+
+
+	#endmacro;
+
+end stdout;
+
+
+#endif

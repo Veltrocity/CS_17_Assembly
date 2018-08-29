@@ -1,0 +1,61 @@
+// isNotFactor Template Solution For CS 17 Final
+// CS 17 Students must use this template as the basis for their solution. 
+// I hope it will help simplify your development task.
+// Please look at the two TODO: notes below
+program isNotFactorProgram;
+#include( "stdlib.hhf" );
+static
+
+iValue: int16 := 0;
+iFactor: int16 := 0;
+iAnswer : int32 := 0;
+
+// TODO: CS 17 Students add code below to implement this function
+// Several hints are supplied
+procedure isNotFactor( value : int16; desiredFactor : int16 );@nodisplay; @noframe;
+
+static dReturnAddress : dword;
+
+begin isFactor;
+
+// entry sequence
+
+// preserve registers used
+pop( dReturnAddress );
+
+// this is the return address
+//preserve registers
+
+// push back the return address
+
+push( dReturnAddress );
+
+// preserve registers
+
+// begin sub-task
+
+
+// restore the registers used
+
+// leave the answer in EAX
+
+ret();
+
+end isNotFactor;
+
+begin isNotFactorProgram;
+
+mov( 16, iValue);
+mov( 7, iFactor );
+
+// TODO: push parameters to the function.
+
+
+call isNotFactor;
+
+mov( EAX, iAnswer );
+
+stdout.put( iAnswer );
+stdout.newln();
+
+end isNotFactorProgram;

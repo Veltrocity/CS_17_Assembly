@@ -1,0 +1,35 @@
+Program fib_sequence;
+
+static
+
+count : int 32;
+val_01 : int 32;
+val_02 : int32;
+val_03 : int32;
+
+Begin fib_sequence;
+
+mov(1 , val_02);
+mov(1, val_03);
+
+stdout.put("val_01 = 1" , nl , "val_02 = 2" , nl);
+
+mov(3, count);
+
+while ( counter <= n)  do
+
+	mov(val_02, xy);
+	mov(val_03, xz);
+	add(xy , xz);
+
+	mov(xy, val_01);
+	stdout.put("Fibonacci = ", val_01 , nl);
+
+	mov(xy, val_02);
+	mov(xz, val_03);
+	add(1, count);
+	endwhile;
+
+end fib_sequence;
+
+

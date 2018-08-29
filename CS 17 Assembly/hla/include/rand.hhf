@@ -1,0 +1,33 @@
+#if( ! @defined( random_hhf ));
+?random_hhf := true;
+
+namespace rand; @fast;
+
+	procedure randomize; 
+			@external( "RAND_RANDOMIZE" );
+
+	procedure uniform;
+			@returns( "eax" ); 
+			@external( "RAND_UNIFORM" );
+
+	procedure random;
+			@returns( "eax" ); 
+			@external( "RAND_RANDOM" );
+
+	procedure range( startRange:dword; endRange:dword );
+			@returns( "eax" ); 
+			@external( "RAND_RANGE" );
+
+	procedure urange( startRange:dword; endRange:dword );
+			@returns( "eax" ); 
+			@external( "RAND_URANGE" );
+
+
+	iterator deal( count:dword ); 
+			@external( "RAND_DEAL" );
+
+
+end rand;
+
+
+#endif

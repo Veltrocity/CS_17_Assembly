@@ -1,0 +1,800 @@
+#if( ! @defined( fileclass_hhf ));
+?fileclass_hhf := true;
+
+#includeOnce( "hla.hhf" )
+#includeOnce( "stdio.hhf" )
+
+/****************************************************/
+/*                                                  */
+/* 	The FILE class:                                 */
+/*                                                  */
+/****************************************************/
+
+
+
+type
+
+	file:	class
+
+				var
+					fileHandle:dword;
+
+				procedure create;	@external;
+
+				method handle;	returns( "eax" ); @external;
+
+				method open
+				( 
+					FileName:string; 
+					Access:dword 
+				); 
+				@external;
+
+				method openNew( FileName: string ); @external;
+				method write( var buffer:var; count:dword ); @external;
+				method read( var buffer:var; count:dword ); @external;
+				
+				method close; @external;
+				method eof; returns( "al" ); @external; 
+
+
+
+				procedure readLn; @external;
+				procedure eoln; returns( "al" ); @external;
+
+				procedure getc; returns( "AL" ); @external;
+				procedure gets( s:string ); @external;
+				procedure a_gets; @external;
+
+				procedure geti8; returns( "al" ); @external;
+				procedure geti16; returns( "ax" ); @external;
+				procedure geti32; returns( "eax" ); @external;
+				procedure geti64; returns( "edx:eax" ); @external;
+
+				procedure getu8; returns( "al" ); @external;
+				procedure getu16; returns( "ax" ); @external;
+				procedure getu32; returns( "eax" ); @external;
+				procedure getu64; returns( "edx:eax" ); @external;
+
+				procedure getb; returns( "al" ); @external;
+				procedure getw; returns( "ax" ); @external;
+				procedure getd; returns( "eax" ); @external;
+				procedure getq; returns( "edx:eax" ); @external;
+
+				procedure getf; returns( "st0" ); @external;
+
+
+
+				procedure putbool( b:boolean );	@external;
+				procedure putcset( cs:cset   ); @external;
+
+				procedure putc( c:char    );
+					@external;
+				procedure putcSize( c:char; width:int32; fill:char );
+					@external;
+
+				procedure newln; @external;
+
+				procedure puts( s:string  );	@external;
+				procedure putsSize
+				( 
+					s:string; 
+					width:int32; 
+					fill:char 
+				); @external;
+
+				procedure putb( h:byte    );	@external;
+				procedure putw( w:word 	  ); 	@external;
+				procedure putd( dw:dword ); 	@external;
+				procedure putq( qw:qword ); 	@external;
+				procedure puttb( tb:tbyte ); 	@external;
+
+				procedure puti64( q:qword ); 	@external;
+				procedure puti32( d:dword ); 	@external;
+				procedure puti16( w:word  ); 	@external;
+				procedure puti8 ( b:byte  ); 	@external;
+
+				procedure putbSize
+				( 
+					b:byte; 
+					width:int32; 
+					fill:char 
+				); @external;
+
+				procedure putwSize
+				( 
+					w:word; 
+					width:int32; 
+					fill:char 
+				); @external;
+
+				procedure putdSize
+				( 
+					d:dword; 
+					width:int32; 
+					fill:char 
+				); @external;
+				
+				procedure putqSize
+				( 
+					q:qword; 
+					width:int32; 
+					fill:char 
+				); @external;
+
+				procedure puti64Size
+				( 
+					q:qword; 
+					width:int32; 
+					fill:char 
+				); @external;
+
+				procedure puti32Size
+				( 
+					d:dword; 
+					width:int32;	
+					fill:char 
+				); @external;
+
+				procedure puti16Size
+				( 
+					w:word;  
+					width:int32;	
+					fill:char 
+				); @external;
+
+				procedure puti8Size 
+				( 
+					b:byte;  
+					width:int32;	
+					fill:char 
+				); @external;
+
+
+				procedure putu64( q:qword ); @external;
+				procedure putu32( d:dword ); @external;
+				procedure putu16( w:word  ); @external;
+				procedure putu8 ( b:byte  ); @external;
+
+				procedure putu64Size
+				( 
+					q:qword; 
+					width:int32;	
+					fill:char 
+				); @external;
+
+				procedure putu32Size
+				( 
+					d:dword; 
+					width:int32;	
+					fill:char 
+				); @external;
+
+				procedure putu16Size
+				( 
+					w:word;  
+					width:int32;	
+					fill:char 
+				); @external;
+
+				procedure putu8Size 
+				( 
+					b:byte;  
+					width:int32;	
+					fill:char 
+				); @external;
+
+
+				procedure putr80
+				( 
+					r:real80; 
+					width:uns32; 
+					decpts:uns32 
+				); @external;
+
+				procedure putr64
+				( 
+					r:real64; 
+					width:uns32; 
+					decpts:uns32 
+				); @external;
+
+				procedure putr32
+				( 
+					r:real32; 
+					width:uns32; 
+					decpts:uns32 
+				); @external;
+
+				procedure putr80pad
+				( 
+					r:real80; 
+					width:uns32; 
+					decpts:uns32; 
+					pad:char 
+				); @external;
+
+				procedure putr64pad
+				( 
+					r:real64; 
+					width:uns32; 
+					decpts:uns32; 
+					pad:char 
+				); @external;
+
+				procedure putr32pad
+				( 
+					r:real32; 
+					width:uns32; 
+					decpts:uns32; 
+					pad:char 
+				); @external;
+
+
+
+
+				procedure pute80
+				( 
+					r:real80; 
+					width:uns32 
+				); @external;
+
+				procedure pute64
+				( 
+					r:real64; 
+					width:uns32 
+				); @external;
+
+				procedure pute32
+				( 
+					r:real32; 
+					width:uns32 
+				); @external;
+
+
+
+
+
+				// _put_ is used by the put macro to emit the correct
+				// call depending upon the presence of width and decpts
+				// parameters in addition to the value to output.
+
+				#macro _put_( _obj_, _routine_, _typename_ ):
+							_invoke_, _func_, _parms_, _realsize_, _typ_;
+
+					?_func_:string := @string:_routine_;
+					?_parms_:string := "";
+					?_typ_:string := @string:_typename_;
+
+					// Real values allow two size parameters 
+					// (width & decpts).
+
+					#if( @substr( _typ_, 0, 4 ) = "real" )
+
+						#if( _width_ <> "-1" )
+
+							?_realsize_:string := @substr( _typ_, 4, 2 );
+
+							// If decpts is <> -1, print in dec notation,
+							// else print in sci notation.
+
+							#if( _decpts_ <> "-1" )
+
+								?_parms_:string := 
+									"," + _width_ + "," + _decpts_;
+								
+							#else
+							 
+								?_func_:string := "pute" + _realsize_;
+								?_parms_:string := "," + _width_;
+
+							#endif
+
+						#else
+
+							// If the user did not specify a format size,
+							// then use the puteXX routines with default
+							// sizes of: real32=15, real64=22, real80=28.
+
+							?_func_:string := "pute" + _realsize_;
+							#if( _realsize_ = "32" )
+
+								?_parms_:string := ",15";
+
+							#elseif( _realsize_ = "64" )
+
+								?_parms_:string := ",22";
+
+							#else
+
+								?_parms_:string := ",28";
+
+							#endif
+
+						#endif
+
+					#else //It's not a real type.
+
+						#if( _decpts_ <> "-1" )
+
+							#error
+							( 
+								"Fractional width specification "
+								"is not supported here" 
+							)
+
+						#elseif( _width_ <> "-1" )
+
+							// Width specifications are only supported for
+							// certain types.  Check for that here.
+
+							#if
+							(
+									_typ_ <> "uns8"
+								&	_typ_ <> "uns16"
+								&	_typ_ <> "uns32"
+								&	_typ_ <> "int8"
+								&	_typ_ <> "int16"
+								&	_typ_ <> "int32"
+								&	_typ_ <> "char"
+								&	_typ_ <> "string"
+								&	_typ_ <> "byte"
+								&	_typ_ <> "word"
+								&	_typ_ <> "dword"
+								&	_typ_ <> "qword"
+							)
+
+								#error
+								( 
+									"Type " + 
+									_typ_ + 
+									" does not support width format "
+									"option" 
+								)
+
+							#else
+
+								?_func_:string := _func_ + "Size";
+								?_parms_:string := "," + _width_ + ", ' '";
+
+							#endif
+
+						#endif
+
+					#endif
+								
+					#if(
+							@isconst( @text( _arg_ ))
+						&	_typ_ = "string"
+						&	_arg_ = "#13 #10"
+					)
+
+						_obj_.newln();
+
+					#elseif( @isconst( @text( _arg_ )))
+
+						?_invoke_:text := @string( _obj_ ) + "." +_func_;
+						_invoke_( @text( _arg_ ) @text( _parms_ ));
+
+					#else
+
+						?_invoke_:text := @string( _obj_ ) + "." + _func_;
+						_invoke_
+						( 
+							(type _typename_ @text( _arg_ )) @text( _parms_ )
+						);
+
+					#endif
+
+				#endmacro;
+
+
+
+				#macro put( _parms_[] ): 
+					_curparm_, _pType_, _arg_, _width_, _decpts_, 
+					_fVar_, _parmArray_, _id_, _fieldCnt_;
+
+					// Preserved ESI and EDI across all the
+					// calls in this macro.
+
+					push( esi );
+					push( edi );
+
+					?_fVar_:text := @LastObject;
+
+					?_curparm_:uns32 := 0;
+					#while( _curparm_ < @elements( _parms_ ))
+
+						// The following stmt frees up any storage
+						// currently in use by parmArray.
+
+						?_parmArray_:uns32 := 0;
+
+						// Get the current parameter into parmArray.
+
+						?_parmArray_ :=	@tokenize
+										(
+											_parms_[ _curparm_ ],
+											0,
+											{':'},
+											{
+												'"',
+												'''',
+												'[',
+												']',
+												'(',
+												')',
+												'{',
+												'}'
+											}
+										);
+
+						?_arg_ := @trim( _parmArray_[ 0 ], 0 );
+						#if( char( _arg_ ) in stdio._idchars_ )
+
+							?_id_ := stdio._GetID_( _arg_ );
+							#if
+							(
+									@class( _id_ ) = hla.cConstant
+								|	@class( _id_ ) = hla.cValue
+							)
+
+								?_id_ := _arg_;
+
+							#endif
+
+						#else
+
+							?_id_ := _arg_;
+
+						#endif
+
+						?_fieldCnt_ := @elements( _parmArray_ );
+						#if( _fieldCnt_ > 1 )
+
+							?_width_ := @trim( _parmArray_[ 1 ], 0 );
+
+						#else
+
+							?_width_ := "-1";
+
+						#endif
+						#if( _fieldCnt_ > 2 )
+
+							?_decpts_ := @trim( _parmArray_[ 2 ], 0 );
+
+						#else
+
+							?_decpts_ := "-1";
+
+						#endif
+						#if( _fieldCnt_ > 3 )
+
+							#error
+							(
+								"<<" + _parms_[ _curparm_ ] + ">>" +
+								" has too many width fields"
+							)
+
+						#endif
+						
+						?_pType_ := @pType(  @text( _id_ ));
+						#if( _pType_ = hla.ptArray )
+
+							?_pType_ := 
+								@pType( @text( @typename( @text( _id_))));
+
+						#endif
+
+						#if( _pType_ = hla.ptBoolean )
+						 
+							file._put_( _fVar_, putbool, boolean )
+
+						#elseif( _pType_ = hla.ptUns8 )
+						 
+							file._put_( _fVar_, putu8, uns8 )
+
+						#elseif( _pType_ = hla.ptUns16 ) 
+						
+							file._put_( _fVar_, putu16, uns16 )
+
+						#elseif( _pType_ = hla.ptUns32 ) 
+						
+							file._put_( _fVar_, putu32, uns32 )
+
+						#elseif( _pType_ = hla.ptByte ) 
+						
+							file._put_( _fVar_, putb, byte )
+
+						#elseif( _pType_ = hla.ptWord ) 
+						
+							file._put_( _fVar_, putw, word )
+
+						#elseif( _pType_ = hla.ptDWord ) 
+						
+							file._put_( _fVar_, putd, dword )
+
+						#elseif( _pType_ = hla.ptInt8 ) 
+						
+							file._put_( _fVar_, puti8, int8 )
+
+						#elseif( _pType_ = hla.ptInt16 ) 
+						
+							file._put_( _fVar_, puti16, int16 )
+
+						#elseif( _pType_ = hla.ptInt32 ) 
+						
+							file._put_( _fVar_, puti32, int32 )
+
+						#elseif( _pType_ = hla.ptChar ) 
+						
+							file._put_( _fVar_, putc, char )
+
+						#elseif( _pType_ = hla.ptCset ) 
+						
+							file._put_( _fVar_, putcset, cset )
+
+						#elseif( _pType_ = hla.ptReal32 ) 
+						
+							file._put_( _fVar_, putr32, real32 )
+
+						#elseif( _pType_ = hla.ptReal64 ) 
+						
+							file._put_( _fVar_, putr64, real64 )
+
+						#elseif( _pType_ = hla.ptReal80 ) 
+						
+							file._put_( _fVar_, putr80, real80 )
+
+						#elseif( _pType_ = hla.ptString )
+
+							file._put_( _fVar_, puts, string )
+
+
+						#elseif( @isclass( @text( _parms_[ _curparm_ ] )))
+
+							#if
+							( 
+								@defined
+								( 
+									@text
+									(
+										 _parms_[ _curparm_ ] + 
+										".toString" 
+									)
+								)
+							)
+
+								push( eax );
+								push( esi );
+								push( edi );
+								@text
+								( 
+									_parms_[ _curparm_ ] + 
+									".toString()"
+								);
+								_fVar_.puts( eax );
+								strfree( eax );
+								pop( edi );
+								pop( esi );
+								pop( eax );
+
+							#else
+
+								#error
+								(
+									"file.put: Class does not provide a "
+									"toString method or procedure"
+								);
+
+							#endif
+
+						#else
+
+							#error
+							( 
+								"file.put: Unknown data type (" +
+								_parms_[ _curparm_ ] +
+								":" +
+								@typename( @text( _parms_[_curparm_] )) +
+								")"
+							);
+
+						#endif
+						?_curparm_ := _curparm_ + 1;
+
+					#endwhile
+
+					pop( edi );
+					pop( esi );
+
+				#endmacro;
+
+
+
+
+
+
+
+
+
+
+				#macro get( _parms_[] ): 
+					_curparm_, _pType_, _arg_, _id_, _fVar_;
+
+					?_curparm_:uns32 := 0;
+					?_fVar_:text := @LastObject;
+					
+					// Save important registers that the "GET" macro uses.
+
+					push( eax );
+					push( esi );
+					push( edi );
+
+					// The following loop repeats once for each GET parameter
+					// we process.
+
+					#while( _curparm_ < @elements( _parms_ ))
+
+						// If this parameter begins with an identifier,
+						// there are some problems to deal with.
+						// The symbol table functions (e.g., @ptype) don't
+						// allow address expression components after the
+						// symbol name.  Named constants, however, do allow
+						// such entities.  The following code determines
+						// (1) is this a symbol?  (2) if it is a symbol, is
+						// it a constant?
+						//
+						//	For non-constant symbols, we need to strip any
+						// trailing non-symbol characters from the string
+						// (e.g., "[0]" ).
+
+						?_arg_ := @trim( _parms_[ _curparm_ ], 0 );
+						#if( char( _arg_ ) in stdio._idchars_ )
+
+							// If this parameter begins with an id character,
+							// then strip away any non-ID symbols from the
+							// end of the string.  Then determine if we've
+							// got a constant or some other class (e.g.,
+							// variable or procedure).  If not a constant,
+							// keep only the name.  If a constant, we need
+							// to keep all trailing characters as well.
+
+							?_id_ := stdio._GetID_( _arg_ );
+							#if
+							( 
+									@class( _id_ ) = hla.cConstant 
+								|	@class( _id_ ) = hla.cValue 
+							)
+
+								?_id_ := _arg_;
+
+							#endif
+
+						#else
+
+							// If it's not an ID, we need to keep everything.
+
+							?_id_ := _arg_;
+
+						#endif
+
+
+
+						// Determine the type of this parameter so we can
+						// call the appropriate routine to input it.
+
+						?_pType_ := @pType( @text( _id_ ));
+						#if( _pType_ = hla.ptArray )
+
+							?_pType_ := 
+								@pType( @text( @typename( @text( _id_ ))));
+
+						#endif
+
+						// Based on the type, call the appropriate library
+						// routine to print this value.
+
+						#if( _pType_ = hla.ptBoolean )
+
+							#error( "Boolean input is not supported" );
+
+						#elseif( _pType_ = hla.ptUns8 ) 
+							
+							_fVar_.getu8();
+							mov( al, @text( _arg_ ));
+
+						#elseif( _pType_ = hla.ptUns16 ) 
+							
+							_fVar_.getu16();
+							mov( ax, @text( _arg_ ));
+
+						#elseif( _pType_ = hla.ptUns32 ) 
+							
+							_fVar_.getu32();
+							mov( eax, @text( _arg_ ));
+
+						#elseif( _pType_ = hla.ptByte ) 
+							
+							_fVar_.getb();
+							mov( al, @text( _arg_ ));
+
+						#elseif( _pType_ = hla.ptWord ) 
+							
+							_fVar_.getw();
+							mov( ax, @text( _arg_ ));
+
+						#elseif( _pType_ = hla.ptDWord ) 
+							
+							_fVar_.getd();
+							mov( eax, @text( _arg_ ));
+
+						#elseif( _pType_ = hla.ptInt8 ) 
+							
+							_fVar_.geti8();
+							mov( al, @text( _arg_ ));
+
+						#elseif( _pType_ = hla.ptInt16 ) 
+							
+							_fVar_.geti16();
+							mov( ax, @text( _arg_ ));
+
+						#elseif( _pType_ = hla.ptInt32 ) 
+							
+							_fVar_.geti32();
+							mov( eax, @text( _arg_ ));
+
+						#elseif( _pType_ = hla.ptChar ) 
+							
+							_fVar_.getc();
+							mov( al, @text( _arg_ ));
+
+						#elseif( _pType_ = hla.ptCset ) 
+
+							#error( "Cset input is not supported" );
+
+						#elseif
+						( 
+								_pType_ = hla.ptReal32 
+							|	_pType_ = hla.ptReal64 
+							|	_pType_ = hla.ptReal80 
+						) 
+							
+							_fVar_.getf();
+							fstp( @text( _arg_ ));
+
+						#elseif( _pType_ = hla.ptString ) 
+
+							_fVar_.gets( @text( _arg_ ));
+
+						#else
+
+							#error
+							( 
+								"stdin.get: Unknown data type (" +
+								_parms_[ _curparm_ ] +
+								":" +
+								@typename( @text( _id_ )) +
+								")"
+							);
+
+						#endif
+						?_curparm_ := _curparm_ + 1;
+
+					#endwhile
+
+					// Restore the registers pushed earlier for this 
+					// call to the GET macro.
+
+					pop( edi );
+					pop( esi );
+					pop( eax );
+
+				#endmacro;
+
+
+
+			endclass;
+
+
+#endif

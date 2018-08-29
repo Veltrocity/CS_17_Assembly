@@ -1,0 +1,51 @@
+/start the program
+
+program PrintSequence;
+
+//include the input output header
+
+#include( "stdio.hhf" );
+
+     //the int8 type variable to store the input
+
+     var n:      int8;
+
+    
+
+     //prompt to enter the number
+
+     stdout.put( "Gimme a decimal value to use as n: " );
+
+    
+
+     //read the number
+
+     stdin.geti8(n);
+
+     //the outer for loop to print each lines
+
+     #for (j := 1 to n
+
+    
+
+          //print the new line
+
+          stdout.put(nl)
+
+         
+
+          //inner for loop to print each sequence
+
+          #for(k := 1 to n)
+
+              stdout.put(j);
+
+          #endfor      
+
+     #endfor;
+
+    
+
+#end program
+
+end PrintSequence;

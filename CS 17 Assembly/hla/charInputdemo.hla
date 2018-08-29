@@ -1,0 +1,134 @@
+//   File:   Char_convert
+//   Author: Austin Castellino
+//
+//   Creation Date:  7\9\2018
+//
+//
+//   DESCRIPTION
+//  upper and lower case letters merely by switching bit position 5 on and off
+//  So in other words, UPPERCASE letters should become lowercase, lowercase letters should become  
+//  UPPERCASE, number characters should be come an exclamation mark and all other characters should
+//  turn into an underscore.  The converted letter should be stored in AL.
+//   
+//Feed Me: I
+//converted that's i
+//Feed Me: g
+//converted that's G
+//Feed Me: 1
+//converted that's !
+//Feed Me: #
+//converted that's _
+//
+//  
+//
+//   
+program Char_convert;
+ 
+#include( "stdlib.hhf" );
+static
+    val_01: int8;
+    val_02 : int8;
+
+procedure Char_converter( myCh : byte ); @nodisplay; @noframe;  
+
+static
+ 
+    c:char;
+    returnAddress : dword;
+    temp: int16;
+ 
+begin Char_converter;
+
+    pop(returnAddress);
+    pop(temp);
+    //pop(c);
+    pop(myCh);
+    push(returnAddress);
+ 
+ 
+    stdout.put( "Enter a character: " );
+ 
+    stdin.getc();
+
+
+ Lowercase:
+    if( al >= 'a' ) then
+ 
+    
+ 
+        if( al <= 'z' ) then
+ 
+        
+            sub($32, al);
+            and( $5f, al );
+            
+
+ 
+            
+ 
+        endif;
+        endif;
+        jmp Exit_00;
+ 
+  Uppercase:
+
+     if( al >= 'A' ) then
+ 
+    
+ 
+        if( al <= 'Z' ) then
+ 
+        
+ 
+            add(32, al);
+ 
+            
+ 
+        endif;
+        endif;
+        stdin.flushInput();
+
+ Numericals:
+ 	if( al >= '0' ) then
+ 
+    
+ 
+        if( al <= '9' ) then
+        sub(30, al);
+        and( $5f, al );
+ 
+ 
+            
+ 
+        endif;
+
+ 
+        
+        
+ 
+    endif;
+    jmp Exit_00;
+
+    Exit_00:
+    	ret();
+
+end Char_converter;
+ 
+    stdout.put
+ 
+    ( 
+ 
+        "The character you entered", nl,
+ 
+        "converted, was `"
+ 
+    );
+ 
+    stdout.putc( al );
+    stdout.putc( bl );
+ 
+    stdout.put( "`", nl );
+ 
+   
+ 
+end Char_convert;

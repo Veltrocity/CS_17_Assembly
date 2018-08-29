@@ -1,0 +1,51 @@
+
+#if( ! @defined( tables_hhf ));
+?tables_hhf := true;
+
+type
+
+	tableNode:
+		record
+
+			// Warning! Table algorithms
+			// rely upon the fact that
+			// link is the first field
+			// at offset zero in this record.
+
+			__link:	pointer to tableNode;
+			Value:	dword;
+			id:		string;
+
+		endrecord;
+
+	table:	class
+
+
+
+				var
+					__HashMask:		dword;
+					__HashCnt:		uns32;
+					__HashTable:	dword;
+
+				procedure create( HashSize:uns32 ); 
+					@returns( "esi" ); 
+					@external;
+
+				method destroy( FreeValue:procedure ); 
+					@external;
+
+				method getNode( id:string ); 
+					@returns( "eax" ); 
+					@external;
+
+				method lookup( id:string ); 
+					@returns( "eax" ); 
+					@external;
+
+				iterator item;
+					@external;
+
+			endclass;
+
+#endif
+

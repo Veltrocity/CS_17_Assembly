@@ -1,0 +1,273 @@
+#if( ! @defined( except_hhf ));
+
+/*
+** Note: except_hhf is a special symbol known to the
+** compiler.  If you change this, the compiler may not
+** be able to emit code to automatically call PrintExceptionError.
+**
+**	Modifications:
+**
+**	10/02/2000, RLH:	Added "ExecutedAbstract" exception value.
+**	02/21/2002, RLH:	Added modifications for Linux.
+**	07/04/2002, RLH:	Merged Windows and Linux files together.
+*/
+
+?except_hhf := true;
+?@exceptions := true;
+
+#includeonce( "os.hhf" )
+
+const
+	assert	:text := 
+		"?ex.linenumber := @linenumber; "
+		"?ex.filename := @filename; "
+		"ex.assert";
+
+
+
+namespace ex; @fast;
+
+	val
+		NDEBUG := @global:false;
+		linenumber	:uns32;
+		filename	:uns32;
+			
+	type
+		ExceptionValues : dword;
+
+
+	static
+		AssertionStr:string; @external;
+
+
+	#macro assert( expr ): 
+		skipAssertion,
+		msg;
+
+		#if( !ex.NDEBUG )
+
+			readonly
+
+				msg:string := 
+						@string:expr 
+					+	" " + string( ex.filename )
+					+	" (" + string( ex.linenumber ) + ")";
+
+			endreadonly;
+			jt( expr ) skipAssertion;
+
+				mov( msg, ex.AssertionStr );
+				raise( ex.AssertionFailed );
+
+			skipAssertion:
+
+		#endif
+
+	#endmacro;
+
+
+	
+	const
+
+		UnknownException:	dword := 0;
+
+		// Sofware exceptions.  
+
+		StringOverflow:		dword := UnknownException + 1;
+		StringIndexError:	dword := StringOverflow + 1;
+
+		ValueOutOfRange:	dword := StringIndexError + 1;
+		IllegalChar:		dword := ValueOutOfRange +1;
+		ConversionError:	dword := IllegalChar + 1;
+
+		BadFileHandle:		dword := ConversionError + 1;
+		FileOpenFailure:	dword := BadFileHandle + 1;
+		FileCloseError:		dword := FileOpenFailure + 1;
+		FileWriteError:		dword := FileCloseError + 1;
+		FileReadError:		dword := FileWriteError + 1;
+		FileSeekError:		dword := FileReadError + 1;
+		DiskFullError:		dword := FileSeekError + 1;
+		EndOfFile:			dword := DiskFullError + 1;
+
+		MemoryAllocationFailure: 
+							dword := EndOfFile + 1;
+							
+		MemoryFreeFailure:	dword := MemoryAllocationFailure + 1;
+		
+		MemoryAllocationCorruption:
+							dword := MemoryFreeFailure + 1;
+		
+		AttemptToFreeNULL:	dword := MemoryAllocationCorruption + 1;
+		BlockAlreadyFree:	dword := AttemptToFreeNULL + 1;
+
+		CannotFreeMemory:	dword := BlockAlreadyFree + 1;
+		
+		PointerNotInHeap:	dword := CannotFreeMemory + 1;
+							
+		AttemptToDerefNULL:	dword := PointerNotInHeap + 1;
+
+		WidthTooBig:		dword := AttemptToDerefNULL + 1;
+		TooManyCmdLnParms:	dword := WidthTooBig + 1;
+
+		ArrayShapeViolation:dword := TooManyCmdLnParms + 1;
+		ArrayBounds:		dword := ArrayShapeViolation + 1;
+
+		InvalidDate:		dword := ArrayBounds + 1;
+		InvalidDateFormat:	dword := InvalidDate + 1;
+
+		TimeOverflow:		dword := InvalidDateFormat + 1;
+
+		AssertionFailed:	dword := TimeOverflow + 1;
+		ExecutedAbstract:	dword := AssertionFailed + 1;
+
+		#if( @global:os.win32 )
+			
+			// Hardware Exceptions.
+
+			Breakpoint:			dword := $80000003;
+			SingleStep:			dword := $80000004;
+
+			AccessViolation:	dword := $c0000005;
+			InPageError:		dword := $c0000006;
+			InvalidHandle:		dword := $c0000008;
+			NoMemory:			dword := $c0000017;
+			IllegalInstr:		dword := $c000001d;
+
+			BoundInstr:			dword := $c000008c;
+			fDenormal:			dword := $c000008d;
+			fDivByZero:			dword := $c000008e;
+			fInexactResult:		dword := $c000008f;
+			fInvalidOperation:	dword := $c0000090;
+			fOverflow:			dword := $c0000091;
+			fStackCheck:		dword := $c0000092;
+			fUnderflow:			dword := $c0000093;
+			DivideError:		dword := $c0000094;
+			IntoInstr:			dword := $c0000095;
+			PrivInstr:			dword := $c0000096;
+
+			StackOverflow:		dword := $c00000fd;
+			ControlC:			dword := $c000013a;
+			
+
+
+		#elseif( @global:os.linux )
+		
+			// Hardware related exceptions
+			
+			AccessViolation		:dword	:= ExecutedAbstract+1;
+			Breakpoint			:dword	:= AccessViolation+1;
+			SingleStep			:dword	:= Breakpoint+1;
+			PrivInstr			:dword	:= SingleStep+1;
+			IllegalInstr		:dword	:= PrivInstr+1;
+			BoundInstr			:dword	:= IllegalInstr+1;
+			IntoInstr			:dword	:= BoundInstr+1;
+			DivideError			:dword	:= IntoInstr+1;
+			fDivByZero			:dword	:= DivideError+1;
+			fInexactResult		:dword	:= fDivByZero+1;
+			fInvalidOperation	:dword	:= fInexactResult+1;
+			fOverflow			:dword	:= fInvalidOperation+1;
+			fUnderflow			:dword	:= fOverflow+1;
+			fStackCheck			:dword	:= fUnderflow+1;
+			ControlC			:dword	:= fStackCheck+1;
+			
+
+			MaxExceptionValue	:dword	:= ControlC;
+			
+		
+		#endif
+
+
+	Type
+
+		
+			#if( @global:os.win32 )
+			
+				ExceptionRecord:
+					record	// Windows exception record.
+						
+						ExceptionCode:			dword;
+						ExceptionFlags:			dword;
+						ExceptionRecord:		dword;
+						ExceptionAddress:		dword;
+						NumberParameters:		dword;
+						ExceptionInformation:	dword[ 15 ];
+						
+					endrecord;
+					
+				// Context is Windows-only.
+				
+				Context:
+					record
+						dr:						dword[ 6 ];	//Debug registers.
+						
+						ControlWord:			dword;
+						StatusWord:				dword;
+						TagWord:				dword;
+						ErrorOffset:			dword;
+						ErrorSelector:			dword;
+						DataOffset:				dword;
+						DataSelector:			dword;
+						RegisterArea:			tbyte[ 8 ];
+						Cr0NpxState:			dword;
+						
+						SegGS:					dword;
+						SegFS:					dword;
+						SegES:					dword;
+						SegDS:					dword;
+						
+						regEDI:					dword;
+						regESI:					dword;
+						regEBX:					dword;
+						regEDX:					dword;
+						regECX:					dword;
+						regEAX:					dword;
+						regEBP:					dword;
+					
+						regEIP:					dword;
+						SegCS:					dword;
+						EFlags:					dword;
+						regESP:					dword;
+						SegSS:					dword;
+						
+						ExtendedRegisters:		byte[ 512];
+						
+					endrecord;
+
+				ExceptionList:
+					record
+
+						next:				dword;
+						WinExHandler:		procedure;
+						HLAExHandler:		procedure;
+						ExceptionSPSave:	dword;
+						MinusOneMarker:		dword;
+
+					endrecord;
+						
+				
+			#elseif( @global:os.linux )
+				
+				ExceptionRecord:
+					record	// Linux exception record.
+
+						next:				dword;
+						Signature:			dword;
+						curCoroutine:		dword;
+						SavedContext:		dword;
+						HLAExHandler:		procedure;
+		
+					endrecord;
+			
+			#endif
+			
+
+
+
+	procedure printExceptionError; @external;
+	procedure defaultExceptionHandler; 
+		@external( "DefaultExceptionHandler__hla_" );
+
+
+end ex;
+
+#endif

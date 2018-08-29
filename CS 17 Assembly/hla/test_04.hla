@@ -1,0 +1,132 @@
+//   File:   Fee_cal
+//   Author: Austin Castellino
+//
+//   Creation Date:  7\9\2018
+//
+//
+//   DESCRIPTION
+//
+//   Program with HlA a Smc Fee calculator which calculate the amount paid for a semester. demonstrate use of loops and proper registers.
+//   Test numbers: '4c' = 688$ & 'CC'
+//
+//       
+//
+//   and get:
+//   Feed me(2 hex digits with the bits prsseeee): CC
+//   Fall Semester
+//   12 units
+//   CA Resident
+//   Parking
+//   Total Fees = $ 688
+//
+//   
+program Fee_cal;
+#include( "stdlib.hhf" );
+ static
+   total : int32 := 0; //32 bit variable
+
+   begin Fee_cal;
+
+   stdout.put("Please enter a number or letters to have you Smc Fee's calculated: "); //prompt
+   stdin.get(BL); //input the number or letters to be calculated into the BL register
+   mov(total,ECX); //total and Ecx
+   mov(BL,AL);
+   shr(4,AL);
+   and( %0000_0011, AL );
+   cmp(AL, 00);
+   je Fall; 
+   cmp(AL, 10);
+   je Spring;
+   jmp Win;
+
+   Fall:
+   stdout.put("Fall Semester", nl); 
+       mov(BL,AL); //takes BL and calculates the fall semester
+       shr(7,AL);
+       and( %0000_0001, AL );
+       cmp(AL,1);
+       je SprFallPark;
+       add(51, ECX); // Adding 51 to BL increases the total fee amount by "51"
+       jmp ResCheck;
+
+   Spring:
+        stdout.put("Spring Semester", nl);
+        mov(BL,AL); //using same registers and no new variables cause HLA, the BL price compunds in each code section
+        shr(7,AL);
+        and( %0000_0001, AL );
+        cmp(AL,1);
+        je SprFallPark;
+        stdout.put("No parking", nl);
+        add(51, ECX);
+        jmp ResCheck;
+
+   SprFallPark:
+        stdout.put("Parking", nl);
+       add(136, ECX); //Adds the parking fee to the program
+       jmp ResCheck;
+
+   Win:
+        cmp(AL, 11);
+        je Summer;
+        stdout.put("Winter Semester", nl);
+       mov(BL,AL);
+       shr(7,AL);
+       and( %0000_0001, AL );
+       cmp(AL,1);
+       je WinSumPark;
+       stdout.put("No Parking", nl);
+       add(51, ECX);
+       jmp ResCheck;
+
+       Summer:
+       stdout.put("Summer Semester", nl);
+       mov(BL,AL);
+       shr(7,AL);
+       and( %0000_0001, AL );
+       cmp(AL,1);
+       je WinSumPark;
+       stdout.put("No parking");
+       add(51, ECX);
+       jmp ResCheck;
+   WinSumPark:
+        stdout.put("Parking", nl);
+       add(133, ECX);
+       jmp ResCheck;
+
+   ResCheck:
+       mov(BL,AL);
+       shr(6,AL);
+       and( %0000_0001, AL );
+       cmp(AL,1);
+       je Res;
+       stdout.put("Non-Resident", nl);
+       mov(335,EDX);
+       jmp CalcUnits;
+   Res:
+        stdout.put("CA Resident", nl);
+       mov(46,EDX);
+       jmp CalcUnits;
+
+   CalcUnits:
+
+   ForLp:
+   mov(BL, AL);
+   and(%0000_1111, AL);
+   stdout.puti8(AL);
+   stdout.put(" units", nl);
+   ForLpTerminationTest:
+   cmp(AL, 0);
+   jle ForLpDone;
+   ForLpBody:
+   add(EDX, ECX);
+   ForLpDecrement:
+   dec(AL);
+   jmp ForLpTerminationTest;
+   ForLpDone:
+
+   stdout.put("Total Fees = $");
+   stdout.puti32(ECX);
+
+   end Fee_cal;
+
+   //Notes very tough without the multiplication. Interesting that the BL registers are being moved around. 

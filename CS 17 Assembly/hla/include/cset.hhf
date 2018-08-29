@@ -1,0 +1,98 @@
+#if( ! @defined( cset_hhf ));
+?cset_hhf := true;
+
+namespace cs; @fast;
+
+	procedure isEmpty( src: cset ); 
+			@returns( "al" ); 
+			@external( "CSET_ISEMPTY" );
+
+	procedure member( c:char; theSet:cset ); 
+			@returns( "al" ); 
+			@external( "CSET_MEMBER" );
+
+
+	procedure empty( var dest:cset ); 
+			@external( "CSET_EMPTY" ); 
+
+	procedure cpy( src:cset; var dest:cset ); 
+			@external( "CSET_CPY" );
+
+	procedure setunion( src:cset; var dest:cset ); 
+			@external( "CSET_SETUNION" );
+
+	procedure intersection( src:cset; var dest:cset ); 
+			@external( "CSET_INTERSECTION" );
+
+	procedure difference( src:cset; var dest:cset ); 
+			@external( "CSET_DIFFERENCE" );
+
+	procedure complement( src:cset; var dest:cset ); 
+			@external( "CSET_COMPLEMENT" );
+
+
+	procedure subset( src1:cset; src2:cset ); 
+			@returns( "al" ); 
+			@external( "CSET_SUBSET" );
+
+	procedure superset( src1:cset; src2:cset ); 
+			@returns( "al" ); 
+			@external( "CSET_SUPERSET" );
+
+	procedure psubset( src1:cset; src2:cset ); 
+			@returns( "al" ); 
+			@external( "CSET_PSUBSET" );
+
+	procedure psuperset( src1:cset; src2:cset ); 
+			@returns( "al" ); 
+			@external( "CSET_PSUPERSET" );
+
+	procedure eq( src1:cset; src2:cset ); 
+			@returns( "al" ); 
+			@external( "CSET_EQ" );
+
+	procedure ne( src1:cset; src2:cset ); 
+			@returns( "al" ); 
+			@external( "CSET_NE" );
+
+	procedure charToCset( c:char; var dest:cset ); 
+			@external( "CSET_CHARTOCSET" );
+
+	procedure unionChar( c:char; var dest:cset ); 
+			@external( "CSET_UNIONCHAR" );
+
+	procedure removeChar( c:char; var dest:cset ); 
+			@external( "CSET_REMOVECHAR" );
+
+	procedure rangeChar( first:char; last:char; var dest:cset ); 
+			@external( "CSET_RANGECHAR" );
+
+
+	procedure strToCset( s:string; var dest:cset ); 
+			@external( "CSET_STRTOCSET" );
+
+	procedure strToCset2( s:string; offs:uns32; var dest:cset ); 
+			@external( "CSET_STRTOCSET2" );
+
+	procedure unionStr( s:string; var dest:cset ); 
+			@external( "CSET_UNIONSTR" );
+
+	procedure unionStr2( s:string; offs:uns32; var dest:cset ); 
+			@external( "CSET_UNIONSTR2" );
+
+	procedure removeStr( s:string; var dest:cset ); 
+			@external( "CSET_REMOVESTR" );
+
+	procedure removeStr2( s:string; offs:uns32; var dest:cset ); 
+			@external( "CSET_REMOVESTR2" );
+
+
+	procedure extract( var dest:cset ); @returns( "EAX" ); 
+			@external( "CSET_EXTRACT" );
+
+
+
+end cs;
+
+
+#endif

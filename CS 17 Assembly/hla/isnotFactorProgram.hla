@@ -1,0 +1,119 @@
+// isNotFactor Template Solution For CS 17 Final
+// CS 17 Students must use this template as the basis for their solution. 
+// I hope it will help simplify your development task.
+// Please look at the two TODO: notes below
+program isNotFactorProgram;
+#include( "stdlib.hhf" );
+static
+
+iValue: int16 := 0;
+iFactor: int16 := 0;
+iAnswer : int32 := 0;
+
+// TODO: CS 17 Students add code below to implement this function
+// Several hints are supplied
+procedure isNotFactor( value : int16; desiredFactor : int16 );@nodisplay; @noframe;
+
+static dReturnAddress : dword;
+    temp : int32;
+    val_01: int32 := 0;
+    result: int32 := 0;
+
+begin isFactor;
+
+// entry sequence
+
+stdout.put("Welcome to Factor Check Program, Enter a number: ", nl);
+stdin.get(val_01); 
+
+// preserve registers used
+pop( dReturnAddress );
+pop(EAX);
+pop(EBX);
+pop(val_01);
+pop(result);
+
+
+
+
+// this is the return address
+//preserve registers
+
+// push back the return address
+
+push( dReturnAddress );
+push(temp);
+push(EAX);
+push(val_01);
+push(result);
+
+
+// preserve registers
+
+// begin sub-task
+
+    cmp(result, 1);
+    je equal;
+    jmp WhileLoop;
+
+WhileLoop
+    while (  val_01 > 0)  do
+
+    mov(val_01, EAX); //val_01 goes in EAX
+    mov(EAX, temp); //mov EAX into temp to add later on
+    sub(val_01, notaFactor); //subtract notafactor from val_01 //decrease the count
+    mov(val_01, result); // mov val_01 into result
+
+    
+
+
+
+    
+
+    add(1, count);
+    add([EAX], 1 ); //add one to array of EAX
+endwhile;
+jmp IFstate
+
+IFstate
+    cmp(val_01, 0); //IF val_01 equal to zero, then go to Exit sequence
+    je equal;
+    jmp Exit_00;
+
+Exit_00; //exit sequence
+stdout.put("Val_01 is Zero");
+jmp EndProgram;
+
+// restore the registers used
+push(val_01);
+push(result);
+push(EAX);
+
+// leave the answer in EAX
+    mov(result, EAX); //mov result  in EAX
+
+
+ret();
+
+end isNotFactor;
+
+begin isNotFactorProgram;
+
+mov( 16, iValue);
+mov( 7, iFactor );
+
+// TODO: push parameters to the function.
+push(val_01); //push val_01 to front of stack
+push(EAX); /push eax to stack to be taken in a parameter
+
+
+call isNotFactor;
+
+mov( EAX, iAnswer );
+
+stdout.put( iAnswer );
+stdout.newln();
+
+end isNotFactorProgram;
+
+//hopefully this is the code documented in the class. 

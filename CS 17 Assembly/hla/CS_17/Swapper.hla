@@ -1,0 +1,134 @@
+swapper.hla
+
+program main;
+#include( "stdlib.hhf" );
+static
+one : int16;
+two : int16;
+three : int16;
+
+procedure swapper( var x : int16; var y : int16; var z : int16 ); @nodisplay; @noframe;
+static
+returnAddress: dword;
+register1: dword;
+register2: dword;
+register3: dword;
+register4: dword;
+temp: int16;
+
+begin swapper;
+//entry sequence preserve all registers
+mov(EBX, register1);
+mov(ECX, register2);
+mov(EDX, register3);
+mov(EAX, register4);
+pop(returnAddress);
+pop(EDX);
+pop(ECX);
+pop(EBX);
+push(returnAddress);
+push(register4);
+push(register3);
+push(register2);
+push(register1);
+
+//implementation of a bubble sort type algorithm
+mov([EBX], EAX);
+mov(AX, temp);
+mov([ECX], EAX);
+cmp(temp, AX);
+jg swapXY;
+
+mov([ECX], EAX);
+mov(AX, temp);
+mov([EDX], EAX);
+cmp(temp, AX);
+jg swapYZ;
+jmp endsequence;
+
+swapXY:
+mov([EBX], EAX);
+mov(AX, temp);
+mov([ECX], EAX);
+mov(AX, [EBX]);
+mov(temp, AX);
+mov(AX, [ECX]);
+
+mov([ECX], EAX);
+mov(AX, temp);
+mov([EDX], EAX);
+cmp(temp, AX);
+jl endsequence;
+
+mov([ECX], EAX);
+mov(AX, temp);
+mov([EDX], EAX);
+mov(AX, [ECX]);
+mov(temp, AX);
+mov(AX, [EDX]);
+
+mov([EBX], EAX);
+mov(AX, temp);
+mov([ECX], EAX);
+cmp(temp, AX);
+jl endsequence;
+mov([EBX], EAX);
+mov(AX, temp);
+mov([ECX], EAX);
+mov(AX, [EBX]);
+mov(temp, AX);
+mov(AX, [ECX]);
+jmp endsequence;
+
+swapYZ:
+stdout.put("inYZ");
+mov([ECX], EAX);
+mov(AX, temp);
+mov([EDX], EAX);
+mov(AX, [ECX]);
+mov(temp, AX);
+mov(AX, [EDX]);
+
+mov([EBX], EAX);
+mov(AX, temp);
+mov([ECX], EAX);
+cmp(temp, AX);
+jl endsequence;
+
+mov([EBX], EAX);
+mov(AX, temp);
+mov([ECX], EAX);
+mov(AX, [EBX]);
+mov(temp, AX);
+mov(AX, [ECX]);
+
+endsequence:
+pop(EBX);
+pop(ECX);
+pop(EDX);
+pop(EAX);
+ret();
+
+end swapper;
+
+begin main;
+stdout.put("Gimme X: ");
+stdin.get(one);
+stdout.put("Gimme Y: ");
+stdin.get(two);
+stdout.put("Gimme Z: ");
+stdin.get(three);
+
+mov(&one, EAX);
+push(EAX);
+mov(&two, EAX);
+push(EAX);
+mov(&three, EAX);
+push(EAX);
+
+call swapper;
+
+stdout.put("After sorting, X = ", one,", Y = ", two,", Z = ", three);
+stdout.newln();
+
+end main;

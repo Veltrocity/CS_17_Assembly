@@ -1,0 +1,27 @@
+Program charInputFun;
+
+procedure converter ( myCharacter : byte ); @returns( "myCharacter" );
+
+begin charInputFun;
+
+                if( chars.isLower( myCharacter ) ) then
+
+                                chars.toLower( myCharacter );
+
+                elseif( chars.isUpper( myCharacter ) ) then
+
+                                chars.toUpper( myCharacter );
+
+                elseif( chars.isDigit( myCharacter ) ) then
+
+                                myCharacter := '!';
+
+                else
+
+                                myCharacter := '-';
+
+                endif;
+
+               
+
+end charInputFun;

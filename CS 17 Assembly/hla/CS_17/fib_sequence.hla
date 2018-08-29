@@ -1,0 +1,78 @@
+Program fib_sequence;
+
+static
+
+count : int32;
+val_01 : int32;
+val_02 : int32;
+val_03 : int32;
+
+procedure fibRec( value : int8 ); @nodisplay; @noframe; 
+
+static
+	returnAddres : dword;
+	temp : int32;
+
+Begin fib_sequence;
+
+	pop(returnAddress);
+	pop(temp);
+
+mov(1 ,val_02);
+mov(1, val_03);
+
+stdout.put(" Enter a number to be fib'ed");
+
+stdin.getc();
+int f := fibrec(val_01);
+
+//mov(3, count);
+
+fibrec;
+	result : int32 := 1;
+
+	if (val_01 == 1){
+		if(val_02 == 2) {
+		mov(1, result);
+
+
+		}
+	}
+	else
+
+	mov(0, result);
+	then
+	sub(1, val_01);
+	sub(2, val_02);
+	add(val_01, val_02);
+	mov(val_01, result);
+
+	endif;
+	endif;
+
+	stdout.put(result, nl);
+
+//while ( counter <= n)  do
+
+//	mov(val_02, xy);
+//	mov(val_03, xz);
+//	add(xy , xz);
+
+//	mov(xy, val_01);
+//	stdout.put("Fibonacci = ", val_01 , nl);
+
+//	mov(xy, val_02);
+//	mov(xz, val_03);
+//	add(1, count);
+//	endwhile;
+
+
+end fib_sequence;
+
+
+
+
+
+
+
+

@@ -1,0 +1,124 @@
+//   File:   Smcfee
+//   Author: Austin Castellino
+//
+//   Creation Date:  6\28\2018
+//
+//
+//   DESCRIPTION
+//
+//   To show a an image of my favorite pet using stdout.put to construct the animal with letters. Demonstrate use of hla and practice with hla root file
+//
+//       Favpet
+//
+//   and get:
+//
+//   as the output from the program.  The program just displays a short
+//   message.  Nothing more complicated.
+program Fee_cal;
+#include( "stdlib.hhf" );
+ static
+   total : int32 := 0;
+
+   begin Fee_cal;
+
+   stdout.put("Feed me(2 hex digits with the bits prsseeee):");
+   stdin.get(BL); 
+   mov(total,EAX);
+   mov(BL,AL);
+   shr(4,AL);
+   and( %0000_0011, AL );
+   cmp(AL, 00);
+   je Fall;
+   cmp(AL, 10);
+   je Spring;
+   jmp Win;
+
+   Fall:
+   stdout.put("Fall Semester", nl);
+       mov(BL,AL);
+       shr(7,AL);
+       and( %0000_0001, AL );
+       cmp(AL,1);
+       je SprFallPark;
+       add(51, EAX);
+       jmp ResCheck;
+
+   Spring:
+        stdout.put("Spring Semester", nl);
+        mov(BL,AL);
+        shr(7,AL);
+        and( %0000_0001, AL );
+        cmp(AL,1);
+        je SprFallPark;
+        stdout.put("No parking", nl);
+        add(51, EAX);
+        jmp ResCheck;
+
+   SprFallPark:
+        stdout.put("Parking", nl);
+       add(136, EAX);
+       jmp ResCheck;
+
+   Win:
+        cmp(AL, 11);
+        je Summer;
+        stdout.put("Winter Semester", nl);
+       mov(BL,AL);
+       shr(7,AL);
+       and( %0000_0001, AL );
+       cmp(AL,1);
+       je WinSumPark;
+       stdout.put("No Parking", nl);
+       add(51, EAX);
+       jmp ResCheck;
+
+       Summer:
+       stdout.put("Summer Semester", nl);
+       mov(BL,AL);
+       shr(7,AL);
+       and( %0000_0001, AL );
+       cmp(AL,1);
+       je WinSumPark;
+       stdout.put("No parking");
+       add(51, EAX);
+       jmp ResCheck;
+   WinSumPark:
+        stdout.put("Parking", nl);
+       add(133, EAX);
+       jmp ResCheck;
+
+   ResCheck:
+       mov(BL,AL);
+       shr(6,AL);
+       and( %0000_0001, AL );
+       cmp(AL,1);
+       je Res;
+       stdout.put("Non-Resident", nl);
+       mov(335,EDX);
+       jmp CalcUnits;
+   Res:
+        stdout.put("CA Resident", nl);
+       mov(46,EDX);
+       jmp CalcUnits;
+
+   CalcUnits:
+
+   ForLp:
+   mov(BL, AL);
+   and(%0000_1111, AL);
+   stdout.puti8(AL);
+   stdout.put(" units", nl);
+   ForLpTerminationTest:
+   cmp(AL, 0);
+   jle ForLpDone;
+   ForLpBody:
+   add(EDX, EAX);
+   ForLpDecrement:
+   dec(AL);
+   jmp ForLpTerminationTest;
+   ForLpDone:
+
+   stdout.put("Total Fees = $");
+   stdout.puti32(EAX);
+
+   end Fee_cal;

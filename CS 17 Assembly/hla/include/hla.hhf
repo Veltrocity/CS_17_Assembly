@@ -1,0 +1,227 @@
+#if( ! @defined( hla_hhf ));
+?hla_hhf := true;
+
+	
+namespace hla;
+
+	const
+
+		// SymClass constants.
+
+		cIllegal	:= 0;
+		cConstant	:= 1;	  
+		cValue		:= 2; 	  
+		cType		:= 3; 		  
+		cVar		:= 4;		  
+		cParm		:= 5;		  
+		cStatic		:= 6;	  
+		cLabel		:= 7;		  
+		cProc		:= 8;		  
+		cIterator	:= 9;	  
+		cClassProc	:= 10;
+		cClassIter  := 11;	  
+		cMethod		:= 12;
+		cMacro		:= 13;		  
+		cKeyword	:= 14;	  
+		cTerminator	:= 15;  
+		cProgram	:= 16; 	  
+		cNamespace	:= 17;
+		cSegment    := 18;
+		cRegister	:= 19;	  
+		cNone		:= 20;		  
+
+
+
+		// pType constants.
+
+		ptIllegal	:= 0;		
+		ptBoolean	:= 1;		
+		ptEnum		:= 2;		
+						
+		ptUns8		:= 3;			
+		ptUns16		:= 4;		
+		ptUns32		:= 5;
+		ptUns64		:= 6;
+		ptUns128	:= 7;		
+						
+		ptByte		:= 8;			
+		ptWord		:= 9;			
+		ptDWord		:= 10;		
+		ptQWord		:= 11;
+		ptLWord		:= 12;
+						
+		ptInt8		:= 13;			
+		ptInt16		:= 14;		
+		ptInt32		:= 15;
+		ptInt64		:= 16;
+		ptInt128	:= 17;		
+						
+		ptChar		:= 18;
+		ptWChar		:= 19; 		
+						
+		ptReal32	:= 20;		
+		ptReal64	:= 21; 		
+		ptReal80	:= 22;
+		ptReal128	:= 23;	
+		 				
+		ptString	:= 24;
+		ptWString	:= 25;		
+		ptCset		:= 26;		
+						
+		ptArray		:= 27;		
+		ptRecord	:= 28;		
+		ptUnion		:= 29;		
+		ptClass		:= 30;		
+		ptProcptr	:= 31;		
+		ptThunk		:= 32;		
+		ptPointer	:= 33;		
+
+		ptTByte		:= 34;		
+
+		ptLabel		:= 35;		
+		ptProc		:= 36;			
+		ptMethod	:= 37;		
+		ptClassProc	:= 38;
+		ptClassIter := 39;
+		ptIterator	:= 40;
+		ptProgram	:= 41;		
+		ptMacro		:= 42;		
+		ptText		:= 43;		
+						
+		ptNamespace	:= 44;	
+		ptSegment	:= 45;
+		ptAnonRec	:= 46;
+		ptAnonUnion := 47;
+		ptVariant	:= 48;
+		ptError		:= 49;
+			  		
+
+
+		// ParmClass constants
+
+		illegal_pc	:= 0;		
+		valp_pc		:= 1;		
+		refp_pc		:= 2;		
+		vrp_pc		:= 3;			
+		result_pc	:= 4;		
+		name_pc		:= 5;		
+		lazy_pc		:= 6;
+		
+
+
+		/*
+		** The following constants correspond to bits in the
+		** value returned by @section.  They denote the current
+		** position of the compiler in the code.
+		*/
+
+		inConst		:= 1;
+		inVal		:= 2;
+		inType		:= 4;
+		inVar		:= 8;
+		inStatic	:= $10;
+		inReadonly	:= $20;
+		inStorage	:= $40;
+		inData		:= $80;
+
+		inMain		:= $1000;
+		inProcedure	:= $2000;
+		inMethod	:= $4000;
+		inIterator	:= $8000;
+		inMacro		:= $1_0000;
+		inKeyword	:= $2_0000;
+		inTerminator:= $4_0000;
+		inThunk		:= $8_0000;
+
+		inUnit		:= $80_0000;
+		inProgram	:= $100_0000;
+		inRecord	:= $200_0000;
+		inUnion		:= $400_0000;
+		inClass		:= $800_0000;
+		inNamespace := $1000_0000;
+
+
+
+	// The following macro generates a sequence of
+	// strings that are unique, legal, HLA identifiers
+	// (within the current compilation, do not use
+	// these as public symbols).
+
+	val
+		_hla_labelCnt_ := 0;
+
+
+	#macro genLabel;
+
+		"_genLabel_" + string( hla._hla_labelCnt_ ) + "_"
+		?hla._hla_labelCnt_ := hla._hla_labelCnt_ + 1;
+
+	#endmacro;
+
+
+
+
+	// Macros to test the (p)Type of an object:
+
+	#macro isUns( obj );
+
+		( @ptype( obj ) >= hla.ptUns8 & @ptype( obj ) <= hla.ptUns32 )
+
+	#endmacro;
+
+
+	#macro isInt( obj );
+
+		( @ptype( obj ) >= hla.ptInt8 & @ptype( obj ) <= hla.ptInt32 )
+
+	#endmacro;
+
+
+	#macro isHex( obj );
+
+		( @ptype( obj ) >= hla.ptByte & @ptype( obj ) <= hla.ptDWord )
+
+	#endmacro;
+
+	#macro isNumber( obj );
+
+		( @ptype( obj ) >= hla.ptUns8 & @ptype( obj ) <= hla.ptInt32 )
+
+	#endmacro;
+
+	#macro isOrdinal( obj );
+
+		( @ptype( obj ) >= hla.ptBoolean & @ptype( obj ) <= hla.ptChar )
+
+	#endmacro;
+
+
+	#macro isNumeric( obj );
+
+		(
+				( 
+						@ptype( obj ) >= hla.ptUns8 
+					&	@ptype( obj ) <= hla.ptInt32 
+				)
+			|	(
+						@ptype( obj ) >= hla.ptReal32 
+					&	@ptype( obj ) <= hla.ptReal80
+				)
+		)
+
+	#endmacro;
+
+
+	#macro isReal( obj );
+
+		(
+				@ptype( obj ) >= hla.ptReal32 
+			&	@ptype( obj ) <= hla.ptReal80
+		)
+
+	#endmacro;
+
+
+end hla;
+
+#endif

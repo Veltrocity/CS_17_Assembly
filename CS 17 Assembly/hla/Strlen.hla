@@ -1,0 +1,67 @@
+program Strlen;
+#include( "stdlib.hhf" );
+#include( "cs17string.hla" );
+const
+nullchar : byte := 0;
+static
+//string to build on
+stringData : byte[81] := [ 'a', 'b', 'c', 'a', 'b', 'c', 'c', 'a', 'b', 'c', 'a', 'b', 'c', 'a', 'b', 'c', 'c', 'a', 'b', 'c', 'a', 'b', 'c', 'a', 'b', 'c', 'c', 'a', 'b', 'c', 'a', 'b', 'c', 'a', 'b', 'c', 'c', 'a', 'b', 'c', 'a', 'b', 'c', 'a', 'b', 'c', 'c', 'a', 'b', 'c', 'a', 'b', 'c', 'a', 'b', 'c', 'c', 'a', 'b', 'c', 'a', 'b', 'c', 'a', 'b', 'c', 'c', 'a', 'b', 'c','a', 'b', 'c', 'a', 'b', 'c', 'c', 'a', 'b', 'c','0' ];
+stringDataLen : uns16 := 80; // max number of chars
+
+procedure strlen( baseStringAddress: dword ); @nodisplay; @noframe;
+static
+returnAddress : dword;
+
+counter : int8 := 0;
+tempchar: byte;
+register1: dword;
+
+begin strlen;
+//entry sequence preserve EDX
+mov(EDX, register1);
+pop(returnAddress);
+pop(baseStringAddress);
+push(returnAddress);
+push(register1);
+
+//while loop to count characters
+mov(baseStringAddress, EAX);
+mov(0, DH);
+WhileLp:
+WhileLpTermination:
+cmp([EAX],DH);
+je WhileLpDone;
+WhileLpBody:
+inc(counter);
+inc(EAX);
+jmp WhileLp;
+WhileLpDone:
+
+mov(counter, AL);
+//exit sequence
+pop(EDX);
+ret();
+end strlen;
+
+begin Strlen;
+//build string
+stdout.put("Feed Me: ");
+mov(&stringData, EAX);
+push(EAX);
+push(stringDataLen);
+call gets;
+
+mov(&stringData, EAX);
+push(EAX);
+
+call strlen;
+
+//print string and result
+stdout.put("The String You Entered: ");
+mov(&stringData, EBX);
+push(EBX);
+call puts;
+stdout.put(" Has Length = ");
+stdout.puti8(AL);
+stdout.newln();
+end Strlen;

@@ -1,0 +1,42 @@
+#includeOnce( "os.hhf" )
+#includeOnce( "hla.hhf" )
+#if( os.linux )
+
+	#includeOnce( "linux.hhf" )
+	
+#endif
+#includeOnce( "console.hhf" )
+#includeOnce( "x86.hhf" )
+#includeOnce( "misctypes.hhf" )
+
+#includeOnce( "hll.hhf" )
+#includeOnce( "coroutines.hhf" )
+
+#includeOnce( "excepts.hhf" )
+#includeOnce( "memory.hhf" )
+
+#includeOnce( "args.hhf" )
+#includeOnce( "env.hhf" )
+#includeOnce( "conv.hhf" )
+#includeOnce( "strings.hhf" )
+#includeOnce( "cset.hhf" )
+#includeOnce( "patterns.hhf" )
+#includeOnce( "tables.hhf" )
+#includeOnce( "arrays.hhf" )
+#includeOnce( "chars.hhf" )
+#includeOnce( "lists.hhf" )
+#includeOnce( "bits.hhf" )
+
+#includeOnce( "math.hhf" )
+#includeOnce( "mmap.hhf" )
+#includeOnce( "rand.hhf" )
+
+#includeOnce( "stdio.hhf" )
+#includeOnce( "stdin.hhf" )
+#includeOnce( "stdout.hhf" )
+#includeOnce( "fileio.hhf" )
+#includeOnce( "fileclass.hhf" )
+
+#includeOnce( "datetime.hhf" )
+#includeOnce( "timer.hhf" )
+

@@ -1,0 +1,1177 @@
+#if( ! @defined( fileio_hhf ));
+?fileio_hhf := true;
+
+#includeOnce( "os.hhf" )
+#includeOnce( "hla.hhf" )
+#includeOnce( "stdio.hhf" )
+
+
+/*********************************************************************/
+/*                                                                   */
+/* 	                                                                 */
+/* 	fileio namespace                                                 */
+/* 	                                                                 */
+/* 	                                                                 */
+/*********************************************************************/
+
+namespace fileio; @fast;
+
+#if( @global:os.win32 )
+
+
+	const
+		r	:= $8000_0000;	// Open file for reading.
+		w	:= $4000_0000;	// Open file for writing.
+		rw	:= r | w;		// Open file for reading and writing.
+			
+#elseif( @global:os.linux )
+
+	const
+			r	:= 0;				// Open file for reading.
+			w	:= 1;				// Open file for writing.
+			rw	:= 2;				// Open file for reading and writing.
+			a	:= 3;				// Open file for append (write)
+
+
+#endif
+
+
+
+
+	procedure open( FileName: string; Access:dword ); 
+		@returns( "EAX" ); 
+		
+			@external( "STDIO_FOPEN" );
+
+
+	procedure openNew( FileName: string ); @returns( "EAX" ); 
+			@external( "STDIO_FOPENNEW" );
+
+	procedure close( Handle:dword ); 
+			@external( "STDIO_FCLOSE" );
+
+	procedure flush( Handle:dword ); 
+			@external( "STDIO_FFLUSH" );
+
+
+	procedure eof( Handle:dword ); @returns( "AL" ); 
+			@external( "STDIO_FEOF" );
+
+
+	procedure write( Handle:dword; var buffer:var; count:uns32 ); 
+			@external( "STDIO_FWRITE" );
+
+	procedure read( Handle:dword; var buffer:var; count:uns32 ); 
+			@external( "STDIO_FREAD" );
+
+	procedure rewind( Handle:dword ); 
+		@external( "STDIO_FREWIND" );
+
+	procedure append( Handle:dword ); 
+		@external( "STDIO_FAPPEND" );
+
+	procedure position( Handle:dword ); 
+		@returns( "EAX" ); 
+		@external( "STDIO_FPOSITION" );
+
+	procedure seek( Handle:dword; offset:dword );
+		@returns( "EAX" ); 
+		@external( "STDIO_FSEEK" );
+
+	procedure rSeek( Handle:dword; offset:dword ); 
+		@returns( "EAX" ); 
+		@external( "STDIO_FRSEEK" );
+
+	procedure truncate( Handle:dword ); 
+		@returns( "EAX" ); 
+		@external( "STDIO_FTRUNCATE" );
+
+	procedure copy( source:string; dest:string; failIfExists:boolean ); 
+		@returns( "EAX" ); 
+		@external( "STDIO_FCOPY" );
+
+	procedure move( source:string; dest:string ); 
+		@returns( "EAX" ); 
+		@external( "STDIO_FMOVE" );
+
+	procedure delete( filename:string ); 
+		@returns( "EAX" ); 
+		@external( "STDIO_FDELETE" );
+
+	procedure mkdir( directory:string ); 
+		@returns( "EAX" ); 
+		@external( "STDIO_FMKDIR" );
+
+	procedure cd( source:string ); 
+		@returns( "EAX" ); 
+		@external( "STDIO_FCD" );
+
+	procedure exists( source:string ); 
+		@returns( "EAX" ); 
+		@external( "STDIO_FEXISTS" );
+
+	procedure gwd( dest:string ); 
+		@external( "STDIO_FGWD" );
+
+	procedure _sizeh_( handle:dword );
+		@returns( "EAX" );
+		@external( "STDIO_FSIZEHANDLE" );
+
+	procedure _sizen_( filename:string );
+		@returns( "EAX" );
+		@external( "STDIO_FSIZENAME" );
+
+	#macro size( parameter );
+
+		#if( @typename( parameter ) = "string" )
+		
+			fileio._sizen_( parameter );
+
+		#elseif( @typename( parameter ) = "dword" )
+
+			fileio._sizeh_( parameter );
+
+		#elseif( @size( parameter ) = 4 )
+
+			#print
+			( 
+				"Warning: assuming '",
+				@string:parameter,
+				"' parameter is a handle" 
+			);
+			fileio._sizeh_( parameter );
+
+		#else
+
+			#error( "Illegal parameter type (expected dword or string)" );
+
+		#endif
+
+	#endmacro;
+
+
+
+	/*
+	** File output routines:
+	*/
+
+	procedure putc( Handle:dword; c:char ); 
+			@external( "STDIO_FPUTC" );
+
+	procedure putcSize
+	( 
+		Handle:dword; 
+		c:char; 
+		width:int32; 
+		fill:char 
+	);	
+			@external( "STDIO_FPUTCSIZE" );
+
+
+	procedure newln( Handle:dword ); 
+			@external( "STDIO_FNEWLN" );
+
+
+	procedure putbool( Handle:dword; b:boolean ); 	
+			@external( "STDIO_FPUTBOOL" );
+
+	procedure putcset( Handle:dword; cs:cset   ); 	
+			@external( "STDIO_FPUTCSET" );
+
+
+	procedure puts( Handle:dword; s:string  ); 
+			@external( "STDIO_FPUTS" );
+
+	procedure putsSize
+	( 
+		Handle:dword; 
+		s:string; 
+		width:int32; 
+		fill:char 
+	);	
+			@external( "STDIO_FPUTSSIZE" );
+
+
+	procedure putb( Handle:dword; h:byte 	 ); 
+			@external( "STDIO_FPUTB" );
+
+	procedure putw( Handle:dword; w:word	 ); 
+			@external( "STDIO_FPUTW" );
+
+	procedure putd( Handle:dword; dw:dword ); 
+			@external( "STDIO_FPUTD" );
+
+	procedure putq( Handle:dword; qw:qword ); 
+			@external( "STDIO_FPUTQ" );
+
+	procedure puttb( Handle:dword; tb:tbyte ); 
+			@external( "STDIO_FPUTTB" );
+
+	procedure putl( Handle:dword; l:lword ); 
+			@external( "STDIO_FPUTL" );
+
+
+
+	procedure putbSize( Handle:dword; b:byte; width:dword; fill:char ); 
+			@external( "STDIO_FPUTBSIZE" );
+
+	procedure putwSize( Handle:dword; w:word; width:dword; fill:char ); 
+			@external( "STDIO_FPUTWSIZE" );
+
+	procedure putdSize( Handle:dword; d:dword; width:dword; fill:char ); 
+			@external( "STDIO_FPUTDSIZE" );
+
+	procedure putqSize( Handle:dword; q:qword; width:dword; fill:char ); 
+			@external( "STDIO_FPUTQSIZE" );
+
+	procedure putlSize( Handle:dword; l:lword; width:dword; fill:char ); 
+			@external( "STDIO_FPUTLSIZE" );
+
+
+
+
+	procedure puti8Size ( Handle:dword; b:byte;  width:int32; fill:char ); 
+			@external( "STDIO_FPUTI8SIZE" );
+
+	procedure puti16Size( Handle:dword; w:word;  width:int32; fill:char ); 
+			@external( "STDIO_FPUTI16SIZE" );
+
+	procedure puti32Size( Handle:dword; d:dword; width:int32; fill:char ); 
+			@external( "STDIO_FPUTI32SIZE" );
+
+	procedure puti64Size( Handle:dword; q:qword; width:int32; fill:char ); 
+			@external( "STDIO_FPUTI64SIZE" );
+
+	procedure puti128Size( Handle:dword; l:lword; width:int32; fill:char ); 
+			@external( "STDIO_FPUTI128SIZE" );
+
+
+	
+	procedure puti8 ( Handle:dword; b:byte  ); 
+			@external( "STDIO_FPUTI8" );
+
+	procedure puti16( Handle:dword; w:word  ); 
+			@external( "STDIO_FPUTI16" );
+
+	procedure puti32( Handle:dword; d:dword ); 
+			@external( "STDIO_FPUTI32" );
+
+	procedure puti64( Handle:dword; q:qword ); 
+			@external( "STDIO_FPUTI64" );
+
+	procedure puti128( Handle:dword; l:lword ); 
+			@external( "STDIO_FPUTI128" );
+
+
+
+	procedure putu8Size( Handle:dword; b:byte; width:int32;   fill:char ); 
+			@external( "STDIO_FPUTU8SIZE" );
+	
+	procedure putu16Size( Handle:dword; w:word; width:int32;  fill:char ); 
+			@external( "STDIO_FPUTU16SIZE" );
+
+	procedure putu32Size( Handle:dword; d:dword; width:int32; fill:char ); 
+			@external( "STDIO_FPUTU32SIZE" );
+
+	procedure putu64Size( Handle:dword; q:qword; width:int32; fill:char ); 
+			@external( "STDIO_FPUTU64SIZE" );
+
+	procedure putu128Size( Handle:dword; l:lword; width:int32; fill:char ); 
+			@external( "STDIO_FPUTU128SIZE" );
+
+	
+	
+	
+	procedure putu8 ( Handle:dword; b:byte  ); 
+			@external( "STDIO_FPUTU8" );
+
+	procedure putu16( Handle:dword; w:word  ); 
+			@external( "STDIO_FPUTU16" );
+
+	procedure putu32( Handle:dword; d:dword ); 
+			@external( "STDIO_FPUTU32" );
+
+	procedure putu64( Handle:dword; q:qword ); 
+			@external( "STDIO_FPUTU64" );
+
+	procedure putu128( Handle:dword; l:lword ); 
+			@external( "STDIO_FPUTU128" );
+
+
+
+	procedure putr80( Handle:dword; r:real80; width:uns32; decpts:uns32 ); 
+			@external( "STDIO_FPUTR80" );
+
+
+	procedure putr64( Handle:dword; r:real64; width:uns32; decpts:uns32 );
+			@external( "STDIO_FPUTR64" );
+
+
+	procedure putr32( Handle:dword; r:real32; width:uns32; decpts:uns32 ); 
+			@external( "STDIO_FPUTR32" );
+
+
+	procedure pute80( Handle:dword; r:real80; width:uns32 ); 
+			@external( "STDIO_FPUTE80" );
+
+	procedure pute64( Handle:dword; r:real64; width:uns32 ); 
+			@external( "STDIO_FPUTE64" );
+
+	procedure pute32( Handle:dword; r:real32; width:uns32 ); 
+			@external( "STDIO_FPUTE32" );
+
+
+	procedure putr80pad
+	(
+		Handle:dword; 
+		r:real80; 
+		width:uns32; 
+		decpts:uns32; 
+		pad:char 
+	); 
+			@external( "STDIO_FPUTR80PAD" );
+
+
+	procedure putr64pad
+	( 
+		Handle:dword; 
+		r:real64; 
+		width:uns32; 
+		decpts:uns32; 
+		pad:char 
+	); 
+			@external( "STDIO_FPUTR64PAD" );
+
+
+	procedure putr32pad
+	( 
+		Handle:dword; 
+		r:real32; 
+		width:uns32; 
+		decpts:uns32; 
+		pad:char 
+	); 
+			@external( "STDIO_FPUTR32PAD" );
+
+
+
+
+
+	procedure readLn( Handle:dword ); 
+			@external( "STDIO_FREADLN" );
+
+	procedure eoln( Handle:dword ); @returns( "al" ); 
+			@external( "STDIO_FEOLN" );
+
+
+	procedure getc( Handle:dword ); @returns( "AL" ); 
+			@external( "STDIO_FGETC" );
+
+	procedure gets( Handle:dword; s:string ); 
+			@external( "STDIO_FGETS" );
+
+	procedure a_gets( Handle:dword ); 
+			@external( "STDIO_A_FGETS" );
+
+
+	procedure geti8( Handle:dword ); @returns( "al" ); 
+			@external( "STDIO_FGETI8" );
+
+	procedure geti16( Handle:dword ); @returns( "ax" ); 
+			@external( "STDIO_FGETI16" );
+
+	procedure geti32( Handle:dword ); @returns( "eax" ); 
+			@external( "STDIO_FGETI32" );
+
+	procedure geti64( Handle:dword ); @returns( "edx:eax" ); 
+			@external( "STDIO_FGETI64" );
+
+	procedure geti128( Handle:dword; var dest:lword ); 
+			@external( "STDIO_FGETI128" );
+
+
+	procedure getu8( Handle:dword ); @returns( "al" ); 
+			@external( "STDIO_FGETU8" );
+
+	procedure getu16( Handle:dword ); @returns( "ax" ); 
+			@external( "STDIO_FGETU16" );
+
+	procedure getu32( Handle:dword ); @returns( "eax" ); 
+			@external( "STDIO_FGETU32" );
+
+	procedure getu64( Handle:dword ); @returns( "edx:eax" ); 
+			@external( "STDIO_FGETU64" );
+
+	procedure getu128( Handle:dword; var dest:lword );
+			@external( "STDIO_FGETU128" );
+
+
+	procedure getb( Handle:dword ); @returns( "al" ); 
+			@external( "STDIO_FGETB" );
+
+	procedure getw( Handle:dword ); @returns( "ax" ); 
+			@external( "STDIO_FGETW" );
+
+	procedure getd( Handle:dword ); @returns( "eax" ); 
+			@external( "STDIO_FGETD" );
+
+	procedure getq( Handle:dword ); @returns( "edx:eax" ); 
+			@external( "STDIO_FGETQ" );
+
+	procedure getl( Handle:dword; var dest:lword ); 
+			@external( "STDIO_FGETL" );
+
+
+	procedure getf( Handle:dword ); @returns( "st0" ); 
+			@external( "STDIO_FGETF" );
+
+
+
+
+
+	#macro _fput_( _routine_, _typename_, _fileVar2_ ):
+					_func_, sizeParms, _realsize_, _typ_;
+
+		?_func_:string := @string:_routine_;
+		?sizeParms:string := "";
+		?_typ_:string := @string:_typename_;
+
+		// Real values allow two size parameters (width & decpts).
+
+		#if( @substr( _typ_, 0, 4 ) = "real" )
+
+			// Note: on entry, typename = real32, real64, or real80 and
+			// routine = putr32, putr64, putr80, fputr32, fputr64, or
+			// fputr80.
+
+			?_realsize_:string := @substr( _typ_, 4, 2 );
+			#if( _width_ <> "-1" )
+
+
+				// If decpts is <> -1, print in dec notation,
+				// else print in sci notation.
+
+				#if( _decpts_ <> "-1" )
+
+					?sizeParms:string := "," + _width_ + "," + _decpts_;
+					
+				#else
+				 
+					?_func_:string := "fileio.pute" + _realsize_;
+					?sizeParms:string := "," + _width_;
+
+				#endif
+
+			#else
+
+				// If the user did not specify a format size,
+				// then use the puteXX routines with default
+				// sizes of: real32=15, real64=22, real80=28.
+
+				?_func_:string := "fileio.pute" + _realsize_;
+				#if( _realsize_ = "32" )
+
+					?sizeParms:string := ",15";
+
+				#elseif( _realsize_ = "64" )
+
+					?sizeParms:string := ",20";
+
+				#else
+
+					?sizeParms:string := ",23";
+
+				#endif
+
+			#endif
+
+		#else //It's not a real type.
+
+			#if( _decpts_ <> "-1" )
+
+				#error
+				( 
+					"Fractional width specification is not supported here" 
+				)
+
+			#elseif( _width_ <> "-1" )
+
+				// Width specifications are only supported for
+				// certain types.  Check for that here.
+
+				#if
+				(
+						_typ_ <> "uns8"
+					&	_typ_ <> "uns16"
+					&	_typ_ <> "uns32"
+					&	_typ_ <> "uns64"
+					&	_typ_ <> "uns128"
+					&	_typ_ <> "int8"
+					&	_typ_ <> "int16"
+					&	_typ_ <> "int32"
+					&	_typ_ <> "int64"
+					&	_typ_ <> "int128"
+					&	_typ_ <> "char"
+					&	_typ_ <> "string"
+					&	_typ_ <> "byte"
+					&	_typ_ <> "word"
+					&	_typ_ <> "dword"
+					&	_typ_ <> "qword"
+					&	_typ_ <> "lword"
+				)
+
+					#error
+					( 
+						"Type " + 
+						_typ_ + 
+						" does not support width format option" 
+					)
+
+				#else
+
+					?_func_:string := _func_ + "Size";
+					?sizeParms:string := "," + _width_ + ", ' '";
+
+				#endif
+
+			#endif
+
+		#endif
+					
+
+		#if
+		( 
+				@isconst( @text( _arg_ )) 
+			&	_typ_ = "string"
+			&	_arg_ = "#13 #10"
+		)
+			fileio.newln( _fileVar2_ );
+
+		#elseif( @isconst( @text( _arg_ )) )
+
+			@text( _func_ )
+			( _fileVar2_, @text( _arg_ ) @text( sizeParms ));
+
+		#else
+
+			@text( _func_ )
+			(
+				_fileVar2_, 
+				(type _typename_ @text( _arg_ )) @text( sizeParms )
+			);
+
+		#endif
+
+	#endmacro;
+
+	#macro put( _fileVar_, _parms_[] ): 
+		_curparm_, _pType_, _arg_, _width_, 
+		_decpts_, _parmArray_, _id_, _tempid_, _fieldCnt_, _saveTrace_;
+
+		?_saveTrace_ := @trace;
+		?@trace := false;
+		
+		?_curparm_:uns32 := 0;
+		
+
+		// The following loop repeats once for each FPUT parameter
+		// we process.
+
+		#while( _curparm_ < @elements( _parms_ ))
+
+			// The following stmt frees up any storage
+			// currently in use by parmArray.
+
+			?_parmArray_:uns32 := 0;
+
+			// Get the current parameter into parmArray.
+			// Parameter takes the form:
+			//
+			//	value_to_print : Field_Width : Fractional_Width
+			//
+			// the "Field_Width" and "Fractional_Width" components
+			// are optional (or may not be allowed for certain types).
+			//
+			// The following call to @tokenize puts "value_to_print"
+			// into parmArray[0].  If present, it puts the "Field_Width"
+			// and "Fractional_Width" values into parmArray[1] and
+			// parmArray[2], respectively.
+
+			?_parmArray_ :=	@tokenize
+							(
+								_parms_[ _curparm_ ],
+								0,
+								{':'},
+								{
+									'"', 
+									'''', 
+									'[', 
+									']', 
+									'(', 
+									')', 
+									'{', 
+									'}' 
+								}
+							);
+			
+			// If this parameter begins with an identifier,
+			// there are some problems to deal with.
+			// The symbol table functions (e.g., @ptype) don't
+			// allow address expression components after the
+			// symbol name.  Named constants, however, do allow
+			// such entities.  The following code determines
+			// (1) is this a symbol?  (2) if it is a symbol, is
+			// it a constant?
+			//
+			//	For non-constant symbols, we need to strip any
+			// trailing non-symbol characters from the string
+			// (e.g., "[0]" ).
+
+			?_arg_ := @trim( _parmArray_[ 0 ], 0 );
+			#if( char( _arg_ ) in stdio._idchars_ )
+
+				// If this parameter begins with an id character,
+				// then strip away any non-ID symbols from the
+				// end of the string.  Then determine if we've
+				// got a constant or some other class (e.g.,
+				// variable or procedure).  If not a constant,
+				// keep only the name.  If a constant, we need
+				// to keep all trailing characters as well.
+
+				?_id_ := stdio._GetID_( _arg_ );
+				#if
+				( 
+						@class( _id_ ) = hla.cConstant 
+					|	@class( _id_ ) = hla.cValue 
+				)
+
+					?_id_ := _arg_;
+
+				#endif
+
+			#else
+
+				// If it's not an ID, we need to keep everything.
+
+				?_id_ := _arg_;
+
+			#endif
+
+			// Okay, determine if the caller supplied a field width
+			// value with this parameter.
+			
+			?_fieldCnt_ := @elements( _parmArray_ );
+			#if( _fieldCnt_ > 1 )
+
+				?_width_ := @trim( _parmArray_[ 1 ], 0 );
+
+			#else
+
+				?_width_ := "-1";		// Default width value.
+
+			#endif
+
+			// Determine if the user supplied a fractional width
+			// value with this parameter.
+
+			#if( _fieldCnt_ > 2 )
+
+				?_decpts_ := @trim( _parmArray_[ 2 ], 0 );
+
+			#else
+
+				?_decpts_ := "-1";	// Default fractional value.
+
+			#endif
+
+			// Quick check to see if the user supplied too many
+			// width fields with this parameter.
+
+			#if( _fieldCnt_ > 3 )
+
+				#error
+				( 
+					"<<" + _parms_[ _curparm_ ] + ">>" +
+					" has too many width fields" 
+				);
+
+			#endif
+
+			// Determine the type of this parameter so we can
+			// call the appropriate routine to print it.
+
+			?_pType_ := @pType( @text( _id_ ));
+			?_tempid_ := _id_;
+			#while( _pType_ = hla.ptArray )
+
+				?_tempid_ := @typename( @text( _tempid_ ));
+				?_pType_ := @pType( @text( _tempid_ ));
+
+			#endwhile
+
+			// Based on the type, call the appropriate library
+			// routine to print this value.
+
+			#if( _pType_ = hla.ptBoolean ) 
+				fileio._fput_( fileio.putbool, boolean, _fileVar_ )
+
+			#elseif( _pType_ = hla.ptUns8 ) 
+				fileio._fput_( fileio.putu8, uns8, _fileVar_ )
+
+			#elseif( _pType_ = hla.ptUns16 ) 
+				fileio._fput_( fileio.putu16, uns16, _fileVar_ )
+
+			#elseif( _pType_ = hla.ptUns32 ) 
+				fileio._fput_( fileio.putu32, uns32, _fileVar_ )
+
+			#elseif( _pType_ = hla.ptUns64 ) 
+				fileio._fput_( fileio.putu64, uns64, _fileVar_ )
+
+			#elseif( _pType_ = hla.ptUns128 ) 
+				fileio._fput_( fileio.putu128, uns128, _fileVar_ )
+
+			#elseif( _pType_ = hla.ptByte ) 
+				fileio._fput_( fileio.putb, byte, _fileVar_ )
+
+			#elseif( _pType_ = hla.ptWord ) 
+				fileio._fput_( fileio.putw, word, _fileVar_ )
+
+			#elseif( _pType_ = hla.ptDWord ) 
+				fileio._fput_( fileio.putd, dword, _fileVar_ )
+
+			#elseif( _pType_ = hla.ptQWord ) 
+				fileio._fput_( fileio.putq, qword, _fileVar_ )
+
+			#elseif( _pType_ = hla.ptLWord ) 
+				fileio._fput_( fileio.putl, lword, _fileVar_ )
+
+			#elseif( _pType_ = hla.ptInt8 ) 
+				fileio._fput_( fileio.puti8, int8, _fileVar_ )
+
+			#elseif( _pType_ = hla.ptInt16 ) 
+				fileio._fput_( fileio.puti16, int16, _fileVar_ )
+
+			#elseif( _pType_ = hla.ptInt32 ) 
+				fileio._fput_( fileio.puti32, int32, _fileVar_ )
+
+			#elseif( _pType_ = hla.ptInt64 ) 
+				fileio._fput_( fileio.puti64, int64, _fileVar_ )
+
+			#elseif( _pType_ = hla.ptInt128 ) 
+				fileio._fput_( fileio.puti128, int128, _fileVar_ )
+
+			#elseif( _pType_ = hla.ptChar ) 
+				fileio._fput_( fileio.putc, char, _fileVar_ )
+
+			#elseif( _pType_ = hla.ptCset ) 
+				fileio._fput_( fileio.putcset, cset, _fileVar_ )
+
+			#elseif( _pType_ = hla.ptReal32 ) 
+				fileio._fput_( fileio.putr32, real32, _fileVar_ )
+
+			#elseif( _pType_ = hla.ptReal64 ) 
+				fileio._fput_( fileio.putr64, real64, _fileVar_ )
+
+			#elseif( _pType_ = hla.ptReal80 ) 
+				fileio._fput_( fileio.putr80, real80, _fileVar_ )
+
+			#elseif( _pType_ = hla.ptString ) 
+				fileio._fput_( fileio.puts, string, _fileVar_ )
+
+			#elseif( @isclass( @text( _parms_[ _curparm_ ] )))
+
+				#if
+				( 
+					@defined
+					( 
+						@text( _parms_[ _curparm_ ] + ".toString" )
+					)
+				)
+
+					push( eax );
+					push( esi );
+					push( edi );
+					@text
+					( 
+						_parms_[ _curparm_ ] + 
+						".toString()"
+					);
+					fileio.puts( _fileVar_, eax );
+					strfree( eax );
+					pop( edi );
+					pop( esi );
+					pop( eax );
+					
+				#else
+
+					#error
+					(
+						"fileio.put: Class does not provide a toString " +
+						"method or procedure"
+					);
+
+				#endif
+
+			#else
+
+				#error
+				( 
+					"fileio.put: Unknown data type (" +
+					_parms_[ _curparm_ ] +
+					":" +
+					@typename( @text( _id_ )) +
+					")"
+				);
+
+			#endif
+			?_curparm_ := _curparm_ + 1;
+
+		#endwhile
+
+		// The following forces a semicolon after
+		// the fileio.put invocation.
+
+		static
+			;
+		endstatic;
+		
+		?@trace := _saveTrace_;
+		
+	#endmacro;
+
+
+
+
+	/*
+	** GET macro for file input.
+	*/
+
+
+
+	#macro get( _fileVar_, _parms_[] ): 
+		_curparm_, _pType_, _arg_, _id_, _tempid_, _saveTrace_;
+
+		?_saveTrace_ := @trace;
+		?@trace := false;
+		
+		?_curparm_:uns32 := 0;
+		
+		// Save important registers that the "GET" macro uses.
+
+		push( eax );
+
+		// The following loop repeats once for each GET parameter
+		// we process.
+
+		#while( _curparm_ < @elements( _parms_ ))
+
+			// If this parameter begins with an identifier,
+			// there are some problems to deal with.
+			// The symbol table functions (e.g., @ptype) don't
+			// allow address expression components after the
+			// symbol name.  Named constants, however, do allow
+			// such entities.  The following code determines
+			// (1) is this a symbol?  (2) if it is a symbol, is
+			// it a constant?
+			//
+			//	For non-constant symbols, we need to strip any
+			// trailing non-symbol characters from the string
+			// (e.g., "[0]" ).
+
+			?_arg_ := @trim( _parms_[ _curparm_ ], 0 );
+			#if( char( _arg_ ) in stdio._idchars_ )
+
+				// If this parameter begins with an id character,
+				// then strip away any non-ID symbols from the
+				// end of the string.  Then determine if we've
+				// got a constant or some other class (e.g.,
+				// variable or procedure).  If not a constant,
+				// keep only the name.  If a constant, we need
+				// to keep all trailing characters as well.
+
+				?_id_ := stdio._GetID_( _arg_ );
+				#if
+				( 
+						@class( @text( _id_ )) = hla.cConstant 
+					|	@class( @text( _id_ )) = hla.cValue 
+				)
+
+					?_id_ := _arg_;
+
+				#endif
+
+			#else
+
+				// If it's not an ID, we need to keep everything.
+
+				?_id_ := _arg_;
+
+			#endif
+
+
+
+			// Determine the type of this parameter so we can
+			// call the appropriate routine to input it.
+
+			?_pType_ := @pType( @text( _id_ ));
+			?_tempid_ := _id_;
+			#while( _pType_ = hla.ptArray )
+
+				?_tempid_ := @typename( @text( _tempid_ ));
+				?_pType_ := @pType( @text( _tempid_ ));
+
+			#endwhile
+
+			// Based on the type, call the appropriate library
+			// routine to print this value.
+
+			#if( _pType_ = hla.ptBoolean )
+
+				#error( "Boolean input is not supported" );
+
+			#elseif( _pType_ = hla.ptUns8 ) 
+				
+				fileio.getu8( _fileVar_ );
+				#if( _arg_ = "al" )
+
+					mov( al, [esp] );
+
+				#elseif( _arg_ = "ah" )
+
+					mov( al, [esp+1] );
+
+				#else
+
+					mov( al, @text( _arg_ ));
+
+				#endif
+
+			#elseif( _pType_ = hla.ptUns16 ) 
+				
+				fileio.getu16( _fileVar_ );
+				#if( _arg_ = "ax" )
+
+					mov( ax, [esp] );
+
+				#else
+
+					mov( ax, @text( _arg_ ));
+
+				#endif
+
+			#elseif( _pType_ = hla.ptUns32 ) 
+				
+				fileio.getu32( _fileVar_ );
+				#if( _arg_ = "eax" )
+
+					mov( eax, [esp] );
+
+				#else
+
+					mov( eax, @text( _arg_ ));
+
+				#endif
+
+			#elseif( _pType_ = hla.ptUns64 ) 
+				
+				push( edx );
+				fileio.getu64( _fileVar_ );
+				mov( eax, @text( "(type dword " + _arg_ + ")" ));
+				mov( edx, @text( "(type dword " + _arg_ + "[4])" ));
+				pop( edx );
+
+			#elseif( _pType_ = hla.ptUns128 ) 
+				
+				fileio.getu128( _fileVar_, @text( _arg_ ) );
+
+			#elseif( _pType_ = hla.ptByte ) 
+				
+				fileio.getb( _fileVar_ );
+				#if( _arg_ = "al" )
+
+					mov( al, [esp] );
+
+				#elseif( _arg_ = "ah" )
+
+					mov( al, [esp+1] );
+
+				#else
+
+					mov( al, @text( _arg_ ));
+
+				#endif
+
+			#elseif( _pType_ = hla.ptWord ) 
+				
+				fileio.getw( _fileVar_ );
+				#if( _arg_ = "ax" )
+
+					mov( ax, [esp] );
+
+				#else
+
+					mov( ax, @text( _arg_ ));
+
+				#endif
+
+			#elseif( _pType_ = hla.ptDWord ) 
+				
+				fileio.getd( _fileVar_ );
+				#if( _arg_ = "eax" )
+
+					mov( eax, [esp] );
+
+				#else
+
+					mov( eax, @text( _arg_ ));
+
+				#endif
+
+
+			#elseif( _pType_ = hla.ptQWord ) 
+				
+				push( edx );
+				fileio.getq( _fileVar_ );
+				mov( eax, @text( "(type dword " + _arg_ + ")" ));
+				mov( edx, @text( "(type dword " + _arg_ + "[4])" ));
+				pop( edx );
+				
+			#elseif( _pType_ = hla.ptLWord ) 
+				
+				fileio.getl( _fileVar_, @text( _arg_ ) );
+
+			#elseif( _pType_ = hla.ptInt8 ) 
+				
+				fileio.geti8( _fileVar_ );
+				#if( _arg_ = "al" )
+
+					mov( al, [esp] );
+
+				#elseif( _arg_ = "ah" )
+
+					mov( al, [esp+1] );
+
+				#else
+
+					mov( al, @text( _arg_ ));
+
+				#endif
+
+			#elseif( _pType_ = hla.ptInt16 ) 
+				
+				fileio.geti16( _fileVar_ );
+				#if( _arg_ = "ax" )
+
+					mov( ax, [esp] );
+
+				#else
+
+					mov( ax, @text( _arg_ ));
+
+				#endif
+
+			#elseif( _pType_ = hla.ptInt32 ) 
+				
+				fileio.geti32( _fileVar_ );
+				#if( _arg_ = "eax" )
+
+					mov( eax, [esp] );
+
+				#else
+
+					mov( eax, @text( _arg_ ));
+
+				#endif
+
+
+			#elseif( _pType_ = hla.ptInt64 ) 
+				
+				push( edx );
+				fileio.geti64( _fileVar_ );
+				mov( eax, @text( "(type dword " + _arg_ + ")" ));
+				mov( edx, @text( "(type dword " + _arg_ + "[4])" ));
+				pop( edx );
+
+			#elseif( _pType_ = hla.ptInt128 ) 
+				
+				fileio.geti128( _fileVar_, @text( _arg_ ) );
+
+			#elseif( _pType_ = hla.ptChar ) 
+				
+				fileio.getc( _fileVar_ );
+				#if( _arg_ = "al" )
+
+					mov( al, [esp] );
+
+				#elseif( _arg_ = "ah" )
+
+					mov( al, [esp+1] );
+
+				#else
+
+					mov( al, @text( _arg_ ));
+
+				#endif
+
+			#elseif( _pType_ = hla.ptCset ) 
+
+				#error( "Cset input is not supported" );
+
+			#elseif
+			( 
+					_pType_ = hla.ptReal32 
+				|	_pType_ = hla.ptReal64 
+				|	_pType_ = hla.ptReal80 
+			) 
+				
+				fileio.getf( _fileVar_ );
+				fstp( @text( _arg_ ));
+
+			#elseif( _pType_ = hla.ptString ) 
+
+				#if( _arg_ = "eax" )
+
+					fileio.gets(  _fileVar_, [esp] );
+
+				#else
+
+					fileio.gets(  _fileVar_, @text( _arg_ ));
+
+				#endif
+
+			#else
+
+				#error
+				( 
+					"fileio.get: Unknown data type (" +
+					_parms_[ _curparm_ ] +
+					":" +
+					@typename( @text( _id_ )) +
+					")"
+				);
+
+			#endif
+			?_curparm_ := _curparm_ + 1;
+
+		#endwhile
+
+		// Restore the registers pushed earlier for this call to
+		// the GET macro.  Note that this statement does not end
+		// with a semicolon.  This is to force the programmer to
+		// put a semicolon after the fileio.get(--) invocation.
+
+		pop( eax )
+
+		?@trace := _saveTrace_;
+		
+	#endmacro;
+
+
+
+end fileio;
+
+#endif
+
+
+
+

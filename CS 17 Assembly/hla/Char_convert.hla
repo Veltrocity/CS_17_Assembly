@@ -1,0 +1,134 @@
+//   File:   Char_convert
+//   Author: Austin Castellino
+//
+//   Creation Date:  8\1\2018
+//
+//
+//   DESCRIPTION
+//  upper and lower case letters merely by switching bit position 5 on and off
+//  So in other words, UPPERCASE letters should become lowercase, lowercase letters should become  
+//  UPPERCASE, number characters should be come an exclamation mark and all other characters should
+//  turn into an underscore.  The converted letter should be stored in AL.
+//   
+//Feed Me: I
+//converted that's i
+//Feed Me: g
+//converted that's G
+//Feed Me: 1
+//converted that's !
+//Feed Me: #
+//converted that's _
+//
+//  
+//
+//   
+program Char_convert;
+ 
+#include( "stdlib.hhf" );
+static
+
+procedure Char_converter( myCh : byte ); @nodisplay; @noframe;  
+
+static
+ 
+    c:char; //char used in procedure
+    returnAddress : dword;
+    temp: int16;
+ 
+begin Char_converter;
+
+    pop(returnAddress);
+    pop(temp);
+    push(returnAddress); //have returnAddress pushed to front of the stack
+ 
+ 
+    stdout.put( "Enter a character: " );
+ 
+    stdin.getc();
+
+
+ Lowercase:
+    if( al >= 'a' ) then
+ 
+    
+ 
+        if( al <= 'z' ) then
+ 
+        
+            sub($32, al); //subtract 32 from the bit position
+            and( $5f, al );
+            
+
+ 
+            
+ 
+        endif;
+        endif;
+        jmp Exit_00;
+ 
+  Uppercase:
+
+     if( al >= 'A' ) then
+ 
+    
+ 
+        if( al <= 'Z' ) then
+ 
+        
+ 
+            add(32, al); //add 32 to bit position
+ 
+            
+ 
+        endif;
+        endif;
+        stdin.flushInput();
+
+ Numericals:
+ 	if( al >= '0' ) then
+ 
+    
+ 
+        if( al <= '9' ) then
+        sub(30, al); //30 from bit position
+        and( $5f, al ); //displays _ if N/A
+ 
+ 
+            
+ 
+        endif;
+
+ 
+        
+        
+ 
+    endif;
+    jmp Exit_00;
+
+    Exit_00: //exit and return of the function
+    	ret();
+
+end Char_converter;
+ 
+    stdout.put
+ 
+    ( 
+ 
+        "The character you entered", nl,
+ 
+        "converted, was `"
+ 
+    );
+ 
+    stdout.putc( al );
+ 
+    stdout.put( "`", nl );
+ 
+   
+ 
+end Char_convert;
+
+//I am having trouble with my complier and running the procedure.
+//I believe i have my if statements correct however it's been tough to tell
+//
+//if you can, point me in any right direction with this program.

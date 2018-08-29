@@ -1,0 +1,26 @@
+// File: CharExample
+program CharExample1;
+#include( "stdlib.hhf" );
+
+sprocedure converter ( myCharacter : byte ); @returns( "myCharacter" );
+
+begin CharExample;
+
+                if( chars.isLower( myCharacter ) ) then
+
+                                chars.toLower( myCharacter );
+
+                elseif( chars.isUpper( myCharacter ) ) then
+
+                                chars.toUpper( myCharacter );
+
+                elseif( chars.isDigit( myCharacter ) ) then
+
+                                myCharacter := '!';
+
+                else
+
+                                myCharacter := '-';
+
+                endif;
+end CharExample1;

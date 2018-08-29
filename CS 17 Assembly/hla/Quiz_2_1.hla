@@ -1,0 +1,25 @@
+Program bar;
+
+procedure bar( data : int16 ); @nodisplay; @noframe;
+static
+    iTemp : int16;
+    iReturnAddress : dword;
+begin bar;
+    // retrieve return address from the stack
+    pop( iReturnAddress );
+    // retrieve 16 bits of padding from the stack
+    pop( iTemp );
+    // retrieve actual parameter from the stack
+    pop( data );
+    // do somework...
+    mov( 0, EAX );
+    mov( 0, EBX );
+    mov( 0, ECX );
+    mov( 0, EDX );
+    inc( EAX );
+    add( EBX, EAX );
+    inc( EBX );
+    add( EBX, ECX );
+    inc( EDX );
+    ret();
+end bar;

@@ -1,0 +1,35 @@
+Program Summing;
+
+static
+
+n : int32;
+sum : int32 := 0;
+val_01 : int32;
+count : int32;
+
+procedure summing( value : int8 ); @nodisplay; @noframe;
+static
+	returnAddress : dword;
+	temp : int32;
+
+Begin Summing;
+	pop(returnAdderess);
+	pop(temp);
+
+
+stdout.put("Enter a number to be summed up: ", nl);
+stdin.get(n);
+
+while ( count > n)  do
+
+	mov(n, xy);
+	mov(sum, xz);
+	add(xy , xz);
+	sub(1, n);
+
+	ret();
+
+	
+	endwhile;
+
+end Summing;

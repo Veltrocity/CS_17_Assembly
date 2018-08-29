@@ -1,0 +1,76 @@
+
+#if( ! @defined( bits_hhf ));
+?bits_hhf := true;
+
+namespace bits;
+
+	procedure cnt( BitsToCnt:dword ); 
+		@returns( "eax" ); 
+		@external( "BITS_CNT" );
+	
+	procedure distribute( source:dword; mask:dword; dest:dword ); 
+		@returns( "eax" );
+		@external( "BITS_DISTRIBUTE" );
+		
+	procedure coalesce( source:dword; mask:dword ); @returns( "eax" ); 
+		@external( "BITS_COALESCE" );
+	
+
+	#macro extract( d );
+	
+		bsf( d, eax );
+		if( @nz ) then
+		
+			btr( eax, d );
+			
+		else
+		
+			mov( -1, eax );
+			cmp( eax, eax ); // Must set zflag.
+			
+		endif;
+		
+	#endmacro;
+
+	procedure reverse32( BitsToReverse:dword ); 
+		@returns( "eax" ); 
+		@external( "BITS_REVERSE32" );
+
+	procedure reverse16( BitsToReverse:word ); 
+		@returns( "ax" ); 
+		@external( "BITS_REVERSE16" );
+
+	procedure reverse8( BitsToReverse:byte ); 
+		@returns( "al" ); 
+		@external( "BITS_REVERSE8" );
+
+  	procedure merge8( even:byte; odd:byte ); 
+  		@returns( "ax" );
+		@external( "BITS_MERGE8" );
+
+  	procedure merge16( even:word; odd:word ); 
+  		@returns( "eax" );
+		@external( "BITS_MERGE16" );
+
+  	procedure merge32( even:dword; odd:dword ); 
+  		@returns( "edx:eax" );
+		@external( "BITS_MERGE32" );
+
+	procedure nibbles8( theByte:byte ); 
+		@returns( "ax" );
+		@external( "BITS_NIBBLES8" );
+
+	procedure nibbles16( theWord:word ); 
+		@returns( "eax" );
+		@external( "BITS_NIBBLES16" );
+
+	procedure nibbles32( theDWord:dword ); 
+		@returns( "edx:eax" );
+		@external( "BITS_NIBBLES32" );
+
+
+
+end bits;
+
+#endif
+

@@ -1,0 +1,163 @@
+program MiddleFinger;
+#include( "stdlib.hhf" );
+static
+	val1: int16;
+	val2: int16;
+
+
+////////////////////////////
+// Function isDivideableByThreeRec
+////////////////////////////
+procedure isDivideableByThreeRec( n : int16 ); @nodisplay; @noframe;
+procedure middleFinder( x:int16; y:int16; z:int16 ); @nodisplay; @noframe;
+static
+	return_add : dword;
+	temp: int16;
+	//x: int16; //bh
+	//y: int16; //bl
+	//z: int16; //ch
+	temp_01: int16;
+
+begin Middlefinger;
+// this procedure returns its answer in EAX, so we don't need to save that
+// register.  No other register is used, so no other registers need to be saved
+	////////////////// get params from stack ///////////////////
+	pop( return_add );
+	pop( temp );			//padding - stack must be 32-bit aligned
+	pop(x);
+	pop(y);
+	pop(z);
+	//pop( n );
+	push( return_add );
+
+
+	mov( x, bh );
+	mov( y, bl );
+	mov( z,ch );
+
+
+	cmp(bh,0);
+	cmp(bl,0);
+	cmp(ch,0);
+	je ReturnTrue;
+
+
+	cmp( ch, 0 );				//if n=0, return true =1
+	je ReturnTrue;
+
+	cmp( ch, 0 );				//if n<0, return false =0
+	jle ReturnFalse;
+	jmp Neither;				//else isDivideableByThreeRec( n-3 )
+
+	c = d;
+ 
+
+ 
+		mov( a, eax );
+ 
+		cmp( eax, b );
+ 
+		jne DoIF;
+ 
+		mov( x, eax );
+ 
+		cmp( eax, y );
+ 
+		jng EndOfIF;
+ 
+		mov( z, eax );
+ 
+		cmp( eax, y );
+ 
+		jnl EndOfIf;
+ 
+DoIf:
+ 
+		mov( d, c );
+ 
+EndOfIF:
+
+
+	ReturnTrue:
+		mov( 1, EAX );			//return true
+		jmp ExitSequence;
+
+
+	ReturnFalse:
+		mov( 0, EAX );			//return false
+		jmp ExitSequence;
+
+
+	Neither:
+		sub( 0, x);				//x - 0
+		//be(x, y);
+		be(x, y);
+		je returnTrue;
+		be(y, z);
+		je returnTrue;
+
+		// calling isDivideableByThreeRec( n-3 );
+		push( n );
+		push( temp );     // padding
+		call isDivideableByThreeRec;
+		jmp ExitSequence;
+
+
+
+	ExitSequence:
+	ret();
+
+end MiddleFinger;
+
+
+////////// main program //////////////
+begin MiddleFinger;
+
+  stdout.put("Gimme an x: " );
+  stdin.get( x );
+  stdout.put("Gimme an y: " );
+  stdin.get(y);
+  stdin.get("Gimme an z: ");
+  stdin.get(z);
+
+  push(x);
+  push(y);
+  push(z);
+  push( x );
+  push( y );		//padding
+  call isDivideableByThreeRec;
+  // this function leaves the answer in EAX
+  cmp(EAX, 1);
+  je ISDIVISIBLE;
+  jmp NOTDIVISIBLE;
+
+
+  ISDIVISIBLE:
+  		stdout.put("true",nl);
+		jmp EndProgram;
+
+  NOTDIVISIBLE:
+  		stdout.put("false",nl);
+		jmp EndProgram;
+
+  stdout.newln();
+
+  EndProgram:
+
+end MiddleFinger;
+
+
+
+
+
+//if x <= y
+//be(x, y);
+//e(x, y);
+//je returnTrue;
+//e(y, z);
+//je returnTrue;
+//
+//
+//
+//
+//

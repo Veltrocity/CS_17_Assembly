@@ -1,0 +1,52 @@
+//   File:   Printsequence_01
+//   Author: Austin Castellino
+//
+//   Creation Date:  8\1\2018
+//
+//
+//   DESCRIPTION
+//      To print a pattern of a number for a the for loops in HLA. This demonstrate knowledge
+//      and understanding of a for loop in HLA
+//      
+//      Gimme a decimal value to use as n: 6
+//      111111
+//      222222
+//      333333
+//      444444
+//      555555
+//      666666
+//       
+//
+//   
+program PrintSequence_01;
+#include( "stdlib.hhf" );
+#include( "stdio.hhf");
+
+var
+n:int8; //number
+i:int8; //for the 1st loop
+j:int8; //for the 2nd loop
+
+begin PrintSequence_01;
+stdout.put( "Enter a Number: " ); //prompt
+
+stdin.geti8(); //get an int8 value into N
+
+mov(al,n); //move Al in n
+mov(n,DH); //move N into DH
+
+for(mov(1,i); //move 1 into i
+    i<=DH; //is i <= DH
+    add(1,i)) // //add 1 to i if i <=DH
+do //do while
+stdout.newln(); //print a new line
+for(mov(1,j);
+    j<=DH;
+    add(1,j)) //for 1 into j; j <= DH, n, add 1 to j until j is equal to DH
+
+do
+stdout.put(i); //prints i
+endfor;
+endfor;
+
+end PrintSequence_01;

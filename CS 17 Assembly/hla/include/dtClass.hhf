@@ -1,0 +1,58 @@
+
+#if( ! @defined( dtClass_hhf ));
+?dtClass_hhf := true;
+
+	#includeOnce( "hla.hhf" );
+	#includeOnce( "datetime.hhf" );
+
+	type
+		timeClass = 
+			class
+
+				theTime: time.timerec;
+
+				procedure create; external;
+				method curTime; external;
+				method secsToHMS( seconds:uns32 ); external;
+				method HMStoSecs; external;
+				method toString; external;
+
+			endclass;
+
+		dateClass =
+			class
+
+				theDate:	date.daterec;
+				OutFmt:		date.OutputFormat;
+				Separator:	char;
+
+				procedure create; 	external;
+				method curDate;		external;
+				method isLeapYear;	external;
+				method isValid;		external;
+				method toString;	external;
+
+				method setSeparator( c:char );		external;
+				method setFormat( f:OutputFormat );	external;
+
+				method addDays( days:uns32 );		external;
+				method addMonths( months:uns32 );	external;
+				method addYears( years:uns32 );		external;
+
+				method fromJulian( Julian:uns32 );	external;
+				method toJulian;					external;
+
+				method dayOfWeek;					external;
+				method dayNumber;					external;
+				method daysLeft;					external;
+				method daysBetween
+				( 
+					var otherDate:dateClass 
+				);	external;
+
+			endclass;
+
+
+
+#endif
+

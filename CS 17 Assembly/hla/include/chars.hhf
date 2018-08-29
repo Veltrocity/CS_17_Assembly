@@ -1,0 +1,71 @@
+#if( ! @defined( chars_hhf ));
+?chars_hhf := true;
+
+namespace chars;
+
+	procedure toUpper( c:byte );
+		@use eax; 
+		@returns( "AL" ); 
+		@external( "CHR_TOUPPER" );
+
+	procedure toLower( c:byte ); 
+		@use eax; 
+		@returns( "AL" );
+		@external( "CHR_TOLOWER" );
+
+	procedure isAlpha( c:byte );
+		@use eax; 
+		@returns( "EAX" );
+		@external( "CHR_ISALPHA" );
+
+	procedure isUpper( c:byte );
+		@use eax; 
+		@returns( "EAX" );
+		@external( "CHR_ISUPPER" );
+
+	procedure isLower( c:byte );
+		@use eax; 
+		@returns( "EAX" );
+		@external( "CHR_ISLOWER" );
+
+	procedure isAlphaNum( c:byte );
+		@use eax; 
+		@returns( "EAX" );
+		@external( "CHR_ISALPHANUM" );
+
+	procedure isDigit( c:byte );
+		@use eax; 
+		@returns( "EAX" );
+		@external( "CHR_ISDIGIT" );
+
+	procedure isXDigit( c:byte );
+		@use eax; 
+		@returns( "EAX" );
+		@external( "CHR_ISXDIGIT" );
+
+	procedure isGraphic( c:byte );
+		@use eax; 
+		@returns( "EAX" );
+		@external( "CHR_ISGRAPHIC" );
+
+	procedure isSpace( c:byte );
+		@use eax; 
+		@returns( "EAX" );
+		@external( "CHR_ISSPACE" );
+
+	procedure isASCII( c:byte );
+		@use eax; 
+		@returns( "EAX" );
+		@external( "CHR_ISASCII" );
+
+	procedure isCtrl( c:byte );
+		@use eax; 
+		@returns( "EAX" );
+		@external( "CHR_ISCTRL" );
+
+end chars;
+
+
+
+
+#endif

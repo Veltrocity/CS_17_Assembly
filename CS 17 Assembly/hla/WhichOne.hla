@@ -1,0 +1,172 @@
+program whichOne;
+#include ("stdlib.hhf");
+static
+        iDataValue1` : int16 :=0;
+        iDataValue2 : int16 :=0;
+        iDataValue3 : int16 :=0;
+        temppadding : int16; //for padding
+        
+//////////////////////////////////////////
+//Function middleFinder
+//////////////////////////////////////////
+procedure middleFinder(x: int16; y: int16; z:int16); @nodisplay; @noframe;
+static
+                returnAddress: dword; //dword = 32-bit
+                temp: int16; //for padding
+
+begin middleFinder;
+//this procedure indentifies which of the three parameters is largest
+//return boolean value in AL (1 when all three are equal, 0 otherwise)
+                
+                ///////////get parameters//////////////////
+                pop(returnAddress);
+                pop(temp); //to align the stacks (16-bit)
+                pop(z); //16-bit
+                pop(y); //16-bit
+                pop(x); //16-bit
+                push(returnAddress);
+                
+                //need to preserve BX register, which is used within this function
+                push(BX);
+                
+                ///////////////////////////////////////////
+                //MiddleFinder Algorithm
+                //if x > y
+                        //if y > z, then y is middle
+                        //elseif x > z, then z is middle
+                        //else, middle is x
+                //if x< y
+                        //if x > z, then x is middle
+                        //if y > z, then z is middle
+                        //else, middle is y
+                //if x == y
+                        //if y == z , then all are equal
+                        //if y != z, then no middle number
+                ////////////////////////////////////////////
+                
+                //begin comparision between x and y
+                mov(x,BX); //register BX is x
+                cmp(BX,y); //compare BX(x) to y
+                jg XmoreY; //if x > y
+                jl XlessY; //if x < y
+                je XequalY; //if x == y
+                        
+                
+                XmoreY:
+                //if x > y,then 
+                //begin compare y to z
+                mov(y,BX);
+                cmp(BX,z);
+                je NoMiddle; //if y == z, then no middle
+                jg YmoreZ; //if y > z then, middle is y
+                //begin compare x to z
+                mov(x, BX);
+                cmp(BX,z);
+                je NoMiddle; //if x==z, then no middle
+                jg XmoreZ; //if x > z then, middle is z      
+                //if neither above is true, then middle is x
+                mov(x,BX); //middle is x
+                mov(0,AL);      
+                stdout.put(x, " is in the middle");
+                stdout.newln();
+                jmp EndFunction; //end if
+                
+                        YmoreZ:
+                        mov(y,BX); //middle is y
+                        mov(0,AL);
+                        stdout.put(y, " is in the middle");
+                        stdout.newln();
+                        jmp EndFunction;
+                        
+                        XmoreZ:
+                        mov(z,BX); //middle is z
+                        mov(0,AL);
+                        stdout.put(z, " is in the middle");
+                        stdout.newln();
+                        jmp EndFunction;
+                
+                XlessY:
+                //if x < y,then
+                //begin compare x to z
+                mov(x,BX);
+                cmp(BX,z);
+                je NoMiddle; //if x == z, then no middle
+                jg XmoreZ2nd; //if x > z, then middle is x
+                //begin compare y to z
+                mov(y,BX);
+                cmp(BX,z);
+                je NoMiddle; //if y == z, then no middle
+                jg YmoreZ2nd; //if y > z, then middle is z
+                //if neither above is true, then middle is y
+                mov(y,BX); //middle is y
+                mov(0,AL);
+                stdout.put(y, " is in the middle");
+                stdout.newln();
+                jmp EndFunction; //end if
+                
+                        XmoreZ2nd:
+                        mov(x,BX); //middle is x
+                        mov(0,AL);
+                        stdout.put(x, " is in the middle");
+                        stdout.newln();
+                        jmp EndFunction;
+                        
+                        YmoreZ2nd:
+                        mov(z,BX); //middle is z
+                        mov(0,AL);
+                        stdout.put(z, " is in the middle");
+                        stdout.newln();
+                        jmp EndFunction;
+
+                
+                XequalY:
+                //compare y to z
+                mov(y,BX);
+                cmp(BX,z);
+                je YequalZ; //if y == z then, (x=y=z)
+                jne NoMiddle;
+                
+                        YequalZ:
+                        stdout.put("X and Y and Z are all equal!");
+                        stdout.newln();
+                        mov(1,AL);      
+                        jmp EndFunction;
+                        
+                
+                NoMiddle:
+                mov(0, AL);
+                stdout.put("No middle Number");
+                stdout.newln();
+
+
+                EndFunction:
+                //getting back the preserved originial value of BX
+                pop(BX);
+                ret();
+                
+end middleFinder;
+
+//////////////////////////////////////////
+//Main Program
+//////////////////////////////////////////
+begin whichOne;
+        
+        stdout.put("Feed Me X: ");
+        stdin.get(iDataValue1);
+        stdout.put("Feed Me Y: ");
+        stdin.get(iDataValue2);
+        stdout.put("Feed Me Z: ");
+        stdin.get(iDataValue3);
+        
+        //push into stack
+        push(iDataValue1); //16-bit
+        push(iDataValue2); //16-bit
+        push(iDataValue3); //16-bit
+        push(temppadding); //padding 16-bit
+        
+        call middleFinder;
+        stdout.put("AL = ");
+        stdout.puti8(AL);
+        stdout.newln();
+        
+end whichOne;

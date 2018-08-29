@@ -1,0 +1,1134 @@
+#if( ! @defined( string_hhf ));
+?string_hhf := true;
+
+#includeOnce( "hla.hhf" )
+#includeOnce( "stdio.hhf" )
+
+namespace str; 
+
+	/*
+	** In order to write code that continues to work
+	** even if the internal format of a string changes,
+	** yet allow access to the internal fields of the
+	** string record, it is very important that programs
+	** accessing those internal fields use the following
+	** offsets.
+	*/
+
+	const
+
+		/*
+		** Number of bytes in the string record preceding
+		** the actual character data.  The beginning address
+		** of a string structure, plus this value, is the
+		** base address of the string (the address of the
+		** actual character data).
+		*/
+
+		BytesBeforeStr: int32 :=  8;
+
+		/*
+		** Const versions of strRec, below.
+		*/
+
+		MaxStrLenOfs:	int32 := -8;
+		lengthOfs:		int32 := -4;
+		strDataOfs:		int32 :=  0;
+
+
+	/*
+	** Note: HLA strings consist of a pointer that points at
+	** a zero terminated array of characters.  This array of
+	** characters is at least four bytes long and is always an
+	** even multiple of four characters long.
+	**  
+	** The eight bytes immediately before this pointer 
+	** contain the maximum length and the current dynamic length
+	** of the string data.
+	**
+	** The strRec record provides a template for such a string.
+	** The strData field is specified as an array of 12 characters
+	** to ensure that the size of this structure is 12 bytes (the
+	** "-8" starting offset reduces the size of the record by
+	** eight bytes, so this is corrected in the strData field).
+	** If you have a pointer to an "strRec" record, the pointer
+	** should be pointing at the strData field.  Then you can use
+	** the MaxStrLen and length fieldnames to access those fields
+	** at the appropriate negative offsets. 
+	*/
+
+	type
+		strRec:	record := -8;
+
+					MaxStrLen:	int32;
+					length:		int32;
+					strData:	char[12];
+
+				endrecord;
+
+
+	// str.mLength-	Macro version of str.length.
+	//				Much faster, but not as flexible.
+
+	#macro mLength( _src_ );
+
+		#if( @IsReg32( _src_ ))
+
+			mov( (type str.strRec [_src_]).length, eax );
+
+		#elseif
+		(
+				@class( _src_ ) = hla.cVar
+			|	@class( _src_ ) = hla.cStatic
+			|	@class( _src_ ) = hla.cParm
+		)
+
+			#if( @type( _src_ ) = @type( string ))
+
+				mov( _src_, eax );
+				mov( (type str.strRec [eax]).length, eax );
+
+			#else
+
+				#error( "Expected a string variable" )
+
+			#endif
+
+		#else
+
+			#error( "Expected a string variable or 32-bit register" )
+
+		#endif
+
+	#endmacro;
+
+
+	// str.constant( literal_constant )
+	//
+	//	This macro creates a string constant object whose address
+	// you may assign to a string variable.  This is useful, for
+	// example, when initializing fields of a record with string data.
+	
+	#macro constant( __strconst ):__strname,__padding;
+		forward( __strname );
+			align(4);
+			dword @length( __strconst ), @length( __strconst );
+		__strname:char; @nostorage;
+			byte __strconst, 0;
+			?__padding := ((4 - ((@length( __strconst ) + 1) mod 4)) mod 4);
+			#while( __padding > 0 )
+			
+				byte 0;
+				?__padding -= 1;
+				
+			#endwhile
+			
+	#endmacro;
+
+
+	// str.strvar-	Allocates storage for a static string in
+	//				the HLA STATIC section.
+
+	#macro strvar( strsize ): _strVar_;
+
+		#if( ( @section & hla.inStatic ) != hla.inStatic )
+
+			#error( "str.strvar is legal only in the STATIC section" )
+			string // To prevent cascading errors
+
+		#elseif( !@IsConst( strsize ) | !hla.isNumber( strsize ) )
+
+			#error( "Expected an integer constant string size" );
+			string // To prevent cascading errors
+
+		#else
+				string := &_strVar_;
+				dword strsize;
+				dword 0;
+			    _strVar_: char[ ( strsize + 4 ) & -4 ] :=
+				    [(( strsize + 4 ) & -4 ) dup [#0] ]
+
+		#endif
+
+	#endmacro;
+
+
+	// str.init- Initializes a block of memory for use as
+	//			 a string variable.  Returns the pointer
+	//			 to the string object in EAX.  Note that
+	//			 the numBytes parameter specifies the
+	//			 total number of bytes in the block of
+	//			 memory, not the desired maximum string
+	//			 length.  This value should be at least
+	//			 16 greater than the desired maximum 
+	//			 string length.
+
+	procedure init( var b:var; numBytes:dword );
+		@returns( "eax" ); 
+		@external( "STR_INIT" );
+
+	// zStrToStr, a_zStrToStr- Converts zero terminated strings
+	// to HLA strings.
+	
+	procedure cpyz( var _zstr:var; _dest:string );
+		@external( "STR_CPYZ" );
+
+	procedure a_cpyz( var _zstr:var );
+		@returns( "eax" );
+		@external( "STR_A_CPYZ" );
+	
+
+	// length- Returns the length field of a string.
+
+	procedure length( s:string );
+		@returns( "eax" ); 
+		@external( "STR_LENGTH" );
+		
+	// zlen- Returns the length of a zero-terminated string;
+	
+	procedure zlen( var zstr:byte ); 
+		@returns( "eax" ); 
+		@external( "STR_ZLEN" );
+
+
+	// zcmp- Compares one zstring to another.
+	
+	procedure zcmp( var _zsrc1:byte; var _zsrc2:byte ); 
+		@returns( "eax" ); 
+		@external( "STR_ZCMP" );
+
+
+	procedure cpy( src:string; dest:string );		
+		@returns( "eax" ); 
+		@external( "STR_CPY" ); 
+
+	// zcpy- Copies one zstring to another.
+	
+	procedure zcpy( var zsrc:byte; var zdest:byte ); 
+		@returns( "eax" ); 
+		@external( "STR_ZCPY" );
+
+
+
+	procedure a_cpy( src:string );
+		@returns( "eax" ); 
+		@external( "STR_A_CPY" );
+
+
+	procedure setstr
+	( 
+		src:char; 
+		dest:string; 
+		cnt:uns32 
+	);	
+		@returns( "eax" ); 
+		@external( "STR_SETSTR" );
+
+
+	procedure a_setstr( src:char; count:uns32 );
+		@returns( "eax" ); 
+		@external( "STR_A_SETSTR" );
+
+
+	procedure cat( src:string; dest:string );		
+		@returns( "eax" ); 
+		@external( "STR_CAT" );
+
+
+	procedure zcat( var zsrc:byte; var zdest:byte ); 
+		@returns( "eax" ); 
+		@external( "STR_ZCAT" );
+
+
+	procedure catz( var _zsrc:byte; _dest:string ); 
+		@returns( "eax" ); 
+		@external( "STR_CATZ" );
+
+
+
+
+	procedure a_cat( src1:string; src2:string ); 
+		@returns( "eax" ); 
+		@external( "STR_A_CAT" );
+
+	
+	procedure prefix( src1:string; src2:string );	
+		@returns( "al" ); 
+		@external( "STR_PREFIX" );
+
+	
+	procedure prefix2( src1:string; offs:uns32; src2:string );	
+		@returns( "al" ); 
+		@external( "STR_PREFIX2" );
+
+	
+	procedure iprefix( src1:string; src2:string );	
+		@returns( "al" ); 
+		@external( "STR_IPREFIX" );
+
+	
+	procedure iprefix2( src1:string; offs:uns32; src2:string );	
+		@returns( "al" ); 
+		@external( "STR_IPREFIX2" );
+
+	
+	procedure index( src1:string; src2:string );	
+		@returns( "eax" ); 
+		@external( "STR_INDEX" );
+
+
+	procedure iindex( src1:string; src2:string );	
+		@returns( "eax" ); 
+		@external( "STR_IINDEX" );
+
+
+	procedure index2( src1:string; offs:uns32; src2:string );	
+		@returns( "eax" ); 
+		@external( "STR_INDEX2" );
+
+	procedure iindex2( src1:string; offs:uns32; src2:string );	
+		@returns( "eax" ); 
+		@external( "STR_IINDEX2" );
+
+
+	procedure rindex( src1:string; src2:string );	
+		@returns( "eax" ); 
+		@external( "STR_RINDEX" );
+
+	procedure irindex( src1:string; src2:string );	
+		@returns( "eax" ); 
+		@external( "STR_IRINDEX" );
+
+
+	procedure rindex2( src1:string; offs:uns32; src2:string );	
+		@returns( "eax" ); 
+		@external( "STR_RINDEX2" );
+
+	procedure irindex2( src1:string; offs:int32; src2:string );	
+		@returns( "eax" ); 
+		@external( "STR_IRINDEX2" );
+
+
+	procedure chpos( src1:string; src2:char );
+		@returns( "eax" ); 
+		@external( "STR_CHPOS" );
+
+
+	procedure chpos2( src1:string; offs:uns32; src2:char );
+		@returns( "eax" ); 
+		@external( "STR_CHPOS2" );
+
+
+	procedure rchpos( src1:string; src2:char );
+		@returns( "eax" ); 
+		@external( "STR_RCHPOS" );
+
+	procedure rchpos2( src1:string; offs:uns32; src2:char );
+		@returns( "eax" ); 
+		@external( "STR_RCHPOS2" );
+
+
+	procedure span( src1: string; src2:cset ); 
+		@returns( "eax" ); 
+		@external( "STR_SPAN" );
+
+
+	procedure span2( src1: string; start:uns32; src2:cset ); 
+		@returns( "eax" ); 
+		@external( "STR_SPAN2" );
+
+
+	procedure rspan( src1: string; src2:cset );	
+		@returns( "eax" ); 
+		@external( "STR_RSPAN" );
+
+
+	procedure rspan2( src1: string; start:uns32; src2:cset );	
+		@returns( "eax" ); 
+		@external( "STR_RSPAN2" );
+
+
+
+	procedure brk( src1: string; src2:cset ); 
+		@returns( "eax" ); 
+		@external( "STR_BRK" );
+
+
+	procedure brk2( src1: string; start:uns32; src2:cset ); 
+		@returns( "eax" ); 
+		@external( "STR_BRK2" );
+
+
+	procedure rbrk( src1: string; src2:cset );	
+		@returns( "eax" ); 
+		@external( "STR_RBRK" );
+
+
+	procedure rbrk2( src1: string; start:uns32; src2:cset );	
+		@returns( "eax" ); 
+		@external( "STR_RBRK2" );
+
+
+
+	procedure eq( src1:string; src2:string );
+		@returns( "al" ); @external( "STR_EQ" );
+
+	procedure ne( src1:string; src2:string );
+		@returns( "al" ); @external( "STR_NE" );
+
+	procedure lt( src1:string; src2:string );
+		@returns( "al" ); @external( "STR_LT" );
+
+	procedure gt( src1:string; src2:string );
+		@returns( "al" ); @external( "STR_GT" );
+
+	procedure le( src1:string; src2:string );
+		@returns( "al" ); @external( "STR_LE" );
+
+	procedure ge( src1:string; src2:string );
+		@returns( "al" ); @external( "STR_GE" );
+	 
+	procedure ieq( src1:string; src2:string );
+		@returns( "al" ); @external( "STR_EQI" );
+
+	procedure ine( src1:string; src2:string );
+		@returns( "al" ); @external( "STR_NEI" );
+
+	procedure ilt( src1:string; src2:string );
+		@returns( "al" ); @external( "STR_LTI" );
+
+	procedure igt( src1:string; src2:string );
+		@returns( "al" ); @external( "STR_GTI" );
+
+	procedure ile( src1:string; src2:string );
+		@returns( "al" ); @external( "STR_LEI" );
+
+	procedure ige( src1:string; src2:string );
+		@returns( "al" ); @external( "STR_GEI" );
+	 
+	procedure substr
+	(
+		src		:string; 
+		dest	:string; 
+		start	:dword; 
+		len		:dword 
+	); @external( "STR_SUBSTR" );
+
+	procedure a_substr
+	(
+		src		:string; 
+		start	:dword; 
+		len		:dword 
+	);  @returns( "eax" ); 
+		@external( "STR_A_SUBSTR" );
+
+
+
+	procedure insert
+	(
+		src:	string;
+		dest:	string;
+		start:	dword
+	);  @external( "STR_INSERT" );
+
+	procedure a_insert
+	(
+		src:	string;
+		dest:	string;
+		start:	dword
+	);	@returns( "eax" ); 
+		@external( "STR_A_INSERT" );
+
+
+	procedure delete
+	(
+		dest:	string;
+		start:	dword;
+		len:	dword
+	); @external( "STR_DELETE" );
+
+	procedure a_delete
+	(
+		dest:	string;
+		start:	dword;
+		len:	dword
+	);	@returns( "eax" ); 
+		@external( "STR_A_DELETE" );
+
+
+	procedure truncate
+	(
+		dest:	string;
+		len:	dword
+	); @external( "STR_TRUNCATE" );
+
+	procedure a_truncate
+	(
+		src:	string;
+		len:	dword
+	);	@returns( "eax" ); 
+		@external( "STR_A_TRUNCATE" );
+
+
+	procedure tokenize
+	(
+			src:	string;
+		var	dest:	var
+	);	
+		@returns( "eax" ); 
+		@external( "STR_TOKENIZE" );
+
+
+
+	procedure tokenize2
+	(
+			src:	string;
+		var	dest:	var;
+			delims:	cset
+	);	
+		@returns( "eax" ); 
+		@external( "STR_TOKENIZE2" );
+
+
+
+	procedure upper( dest: string ); 	@external( "STR_UPPER" );
+	procedure a_upper( src: string ); 	@external( "STR_A_UPPER" );
+
+	procedure lower( dest: string ); 	@external( "STR_LOWER" );
+	procedure a_lower( src: string ); 	@external( "STR_A_LOWER" );
+
+
+	procedure delspace( dest: string ); @external( "STR_DELSPACE" );
+
+	procedure a_delspace( src: string );	@external( "STR_A_DELSPACE" );
+
+	procedure trim( dest: string ); 	@external( "STR_TRIM" );
+
+	procedure a_trim( src: string ); 	@external( "STR_A_TRIM" );
+
+
+	procedure replace
+	( 
+		src:string; 
+		dest:string; 
+		from:string; 
+		toStr:string 
+	);	@external( "STR_REPLACE" );
+
+	procedure a_replace( src:string; from:string; toStr:string );
+		@returns( "eax" );
+		@external( "STR_A_REPLACE" );
+
+
+
+	// Value concatenation routines:
+
+	procedure catbool( b:boolean; dest:string );
+		@external( "STR_CATBOOL" );
+
+	procedure catcSize( c:char; width:int32; fill:char; dest:string );
+		@external( "STR_CATCSIZE" );
+
+	procedure catc( c:char; dest:string );
+		@external( "STR_CATC" );
+
+
+	// Note that str.cats is equivalent to str.cat:
+
+	procedure cats( s:string; dest:string );
+		@external( "STR_CAT" );
+
+	procedure catsSize( s:string; width:int32; fill:char; dest:string );
+		@external( "STR_CATSSIZE" );
+
+	procedure catcset( c:cset; dest:string );
+		@external( "STR_CATCSET" );
+
+
+	procedure catb( b:byte; dest:string );
+		@external( "STR_CATB" );
+
+	procedure catw( w:word; dest:string );
+		@external( "STR_CATW" );
+
+	procedure catd( d:dword; dest:string );
+		@external( "STR_CATD" );
+
+	procedure catq( q:qword; dest:string );
+		@external( "STR_CATQ" );
+
+
+
+	procedure catbSize( b:byte; size:dword; fill:char; dest:string );
+		@external( "STR_CATBSIZE" );
+
+	procedure catwSize( w:word; size:dword; fill:char; dest:string );
+		@external( "STR_CATWSIZE" );
+
+	procedure catdSize( d:dword; size:dword; fill:char; dest:string );
+		@external( "STR_CATDSIZE" );
+
+	procedure catqSize( q:qword; size:dword; fill:char; dest:string );
+		@external( "STR_CATQSIZE" );
+
+
+	procedure catu8( u8:byte; dest:string );
+		@external( "STR_CATU8" );
+
+	procedure catu8Size
+	( 
+		u8:byte; 
+		width:int32; 
+		fill:char; 
+		dest:string 
+	);
+	@external( "STR_CATU8SIZE" );
+
+	procedure catu16( u16:word; dest:string );
+		@external( "STR_CATU16" );
+
+	procedure catu16Size
+	( 
+		u16:word; 
+		width:int32;
+		fill:char; 
+		dest:string 
+	);
+	@external( "STR_CATU16SIZE" );
+
+	procedure catu32( u32:dword; dest:string );
+		@external( "STR_CATU32" );
+
+	procedure catu32Size
+	( 
+		u32:dword; 
+		width:int32;
+		fill:char; 
+		dest:string 
+	);
+	@external( "STR_CATU32SIZE" );
+
+	procedure catu64( u64:qword; dest:string );
+		@external( "STR_CATU64" );
+
+	procedure catu64Size
+	( 
+		u64:qword; 
+		width:int32;
+		fill:char; 
+		dest:string 
+	);
+	@external( "STR_CATU64SIZE" );
+
+
+
+
+
+
+
+	procedure cati8( i8:byte; dest:string );
+		@external( "STR_CATI8" );
+
+	procedure cati8Size
+	( 
+		i8:byte; 
+		width:int32; 
+		fill:char; 
+		dest:string 
+	);
+	@external( "STR_CATI8SIZE" );
+
+	procedure cati16( i16:word; dest:string );
+		@external( "STR_CATI16" );
+
+	procedure cati16Size
+	( 
+		i16:word; 
+		width:int32;
+		fill:char; 
+		dest:string 
+	);
+	@external( "STR_CATI16SIZE" );
+
+	procedure cati32( i32:dword; dest:string );
+		@external( "STR_CATI32" );
+
+	procedure cati32Size
+	( 
+		i32:dword; 
+		width:int32;
+		fill:char; 
+		dest:string 
+	);
+	@external( "STR_CATI32SIZE" );
+
+	procedure cati64( i64:qword; dest:string );
+		@external( "STR_CATI64" );
+
+	procedure cati64Size
+	( 
+		i64:qword; 
+		width:int32;
+		fill:char; 
+		dest:string 
+	);
+	@external( "STR_CATI64SIZE" );
+
+
+	procedure catr80
+	( 
+		r:real80; 
+		width:int32; 
+		decpts:uns32; 
+		pad:char;
+		dest:string 
+	);  
+	@external( "STR_CATR80" );
+
+	procedure catr64
+	( 
+		r:real64; 
+		width:int32; 
+		decpts:uns32; 
+		pad:char;
+		dest:string 
+	);  
+	@external( "STR_CATR64" );
+
+	procedure catr32
+	( 
+		r:real32; 
+		width:int32; 
+		decpts:uns32; 
+		pad:char;
+		dest:string 
+	);  
+	@external( "STR_CATR32" );
+
+
+
+
+	procedure cate80
+	( 
+		r:real80; 
+		width:int32; 
+		dest:string 
+	);  
+	@external( "STR_CATE80" );
+
+	procedure cate64
+	( 
+		r:real64; 
+		width:int32; 
+		dest:string 
+	);  
+	@external( "STR_CATE64" );
+
+	procedure cate32
+	( 
+		r:real32; 
+		width:int32; 
+		dest:string 
+	);  
+	@external( "STR_CATE32" );
+
+
+
+
+
+
+	// str.put macros:
+
+	#macro _put_( _routine_, _typename_ ):
+							_func_, _sizeParms_, _realsize_, _typ_;
+
+		?_func_:string := @string:_routine_;
+		?_sizeParms_:string := "";
+		?_typ_:string := @string:_typename_;
+
+		// Real values allow two size parameters (width & decpts).
+
+		#if( @substr( _typ_, 0, 4 ) = "real" )
+
+			// Note: on entry, typename = real32, real64, or real80 and
+			// routine = catr32, catr64, or catr80.
+
+			?_realsize_:string := @substr( _typ_, 4, 2 );
+			#if( _width_ <> "-1" )
+
+
+				// If decpts is <> -1, convert to decimal notation,
+				// else convert to scientific notation.
+
+				#if( _decpts_ <> "-1" )
+
+					?_sizeParms_:string := 
+						"," + _width_ + "," + _decpts_ + ", ' '";
+					
+				#else
+				 
+					?_func_:string := "str.cate" + _realsize_;
+					?_sizeParms_:string := "," + _width_;
+
+				#endif
+
+			#else
+
+				// If the user did not specify a format size,
+				// then use the cateXX routines with default
+				// sizes of: real32=15, real64=22, real80=28.
+
+				?_func_:string := "str.cate" + _realsize_;
+				#if( _realsize_ = "32" )
+
+					?_sizeParms_:string := ",15";
+
+				#elseif( _realsize_ = "64" )
+
+					?_sizeParms_:string := ",20";
+
+				#else
+
+					?_sizeParms_:string := ",23";
+
+				#endif
+
+			#endif
+
+		#else //It's not a real type.
+
+			#if( _decpts_ <> "-1" )
+
+				#error
+				( 
+					"Fractional width specification is not supported here" 
+				)
+
+			#elseif( _width_ <> "-1" )
+
+				// Width specifications are only supported for
+				// certain types.  Check for that here.
+
+				#if
+				(
+						_typ_ <> "uns8"
+					&	_typ_ <> "uns16"
+					&	_typ_ <> "uns32"
+					&	_typ_ <> "int8"
+					&	_typ_ <> "int16"
+					&	_typ_ <> "int32"
+					&	_typ_ <> "char"
+					&	_typ_ <> "string"
+					&	_typ_ <> "byte"
+					&	_typ_ <> "word"
+					&	_typ_ <> "dword"
+					&	_typ_ <> "qword"
+				)
+
+					#error
+					( 
+						"Type " + 
+						_typ_ + 
+						" does not support width format option" 
+					)
+
+				#else
+
+					?_func_:string := _func_ + "Size";
+					?_sizeParms_:string := "," + _width_ + ", ' '";
+
+				#endif
+
+			#endif
+
+		#endif
+					
+
+		#if( @isconst( @text( _arg_ )) )
+
+			@text( _func_ )
+				( @text( _arg_ ) @text( _sizeParms_ ), _destStr_ );
+
+		#else
+
+			@text( _func_ )
+				( 
+					(type _typename_ @text( _arg_ )) @text( _sizeParms_ ),
+					_destStr_
+				);
+
+		#endif
+
+	#endmacro;
+
+
+
+
+
+
+
+	#macro put( _destStr_, _parameters_[] ): 
+		_curparm_, _pType_, _arg_, _width_, 
+		_decpts_, _parmArray_, _id_, _tempid_, _fieldCnt_;
+
+		?_curparm_:uns32 := 0;
+
+		// Clean up the string:
+
+		push( eax );
+		mov( _destStr_, eax );
+		mov( 0, (type dword [eax-4]) );
+		mov( 0, (type dword [eax]) ); 
+		pop( eax );
+	
+		// The following loop repeats once for each PUT parameter
+		// we process.
+
+		#while( _curparm_ < @elements( _parameters_ ))
+
+			// The following stmt frees up any storage
+			// currently in use by parmArray.
+
+			?_parmArray_:uns32 := 0;
+
+			// Get the current parameter into parmArray.
+			// Parameter takes the form:
+			//
+			//	value_to_print : Field_Width : Fractional_Width
+			//
+			// the "Field_Width" and "Fractional_Width" components
+			// are optional (or may not be allowed for certain types).
+			//
+			// The following call to @tokenize puts "value_to_print"
+			// into parmArray[0].  If present, it puts the "Field_Width"
+			// and "Fractional_Width" values into parmArray[1] and
+			// parmArray[2], respectively.
+
+			?_parmArray_ :=	@tokenize
+							(
+								_parameters_[ _curparm_ ],
+								0,
+								{':'},
+								{
+									'"', 
+									'''', 
+									'[', 
+									']', 
+									'(', 
+									')', 
+									'{', 
+									'}' 
+								}
+							);
+			
+			// If this parameter begins with an identifier,
+			// there are some problems to deal with.
+			// The symbol table functions (e.g., @ptype) don't
+			// allow address expression components after the
+			// symbol name.  Named constants, however, do allow
+			// such entities.  The following code determines
+			// (1) is this a symbol?  (2) if it is a symbol, is
+			// it a constant?
+			//
+			//	For non-constant symbols, we need to strip any
+			// trailing non-symbol characters from the string
+			// (e.g., "[0]" ).
+
+			?_arg_ := @trim( _parmArray_[ 0 ], 0 );
+			#if( char( _arg_ ) in stdio._idchars_ )
+
+				// If this parameter begins with an id character,
+				// then strip away any non-ID symbols from the
+				// end of the string.  Then determine if we've
+				// got a constant or some other class (e.g.,
+				// variable or procedure).  If not a constant,
+				// keep only the name.  If a constant, we need
+				// to keep all trailing characters as well.
+
+				?_id_ := stdio._GetID_( _arg_ );
+				#if
+				( 
+						@class( _id_ ) = hla.cConstant 
+					|	@class( _id_ ) = hla.cValue 
+				)
+
+					?_id_ := _arg_;
+
+				#endif
+
+			#else
+
+				// If it's not an ID, we need to keep everything.
+
+				?_id_ := _arg_;
+
+			#endif
+
+			// Okay, determine if the caller supplied a field width
+			// value with this parameter.
+			
+			?_fieldCnt_ := @elements( _parmArray_ );
+			#if( _fieldCnt_ > 1 )
+
+				?_width_ := @trim( _parmArray_[ 1 ], 0 );
+
+			#else
+
+				?_width_ := "-1";		// Default width value.
+
+			#endif
+
+			// Determine if the user supplied a fractional width
+			// value with this parameter.
+
+			#if( _fieldCnt_ > 2 )
+
+				?_decpts_ := @trim( _parmArray_[ 2 ], 0 );
+
+			#else
+
+				?_decpts_ := "-1";	// Default fractional value.
+
+			#endif
+
+			// Quick check to see if the user supplied too many
+			// width fields with this parameter.
+
+			#if( _fieldCnt_ > 3 )
+
+				#error
+				( 
+					"<<" + _parameters_[ _curparm_ ] + ">>" +
+					" has too many width fields" 
+				);
+
+			#endif
+
+			// Determine the type of this parameter so we can
+			// call the appropriate routine to print it.
+
+			?_pType_ := @pType( @text( _id_ ));
+			?_tempid_ := _id_;
+			#while( _pType_ = hla.ptArray )
+
+				?_tempid_ := @typename( @text( _tempid_ ));
+				?_pType_ := @pType( @text( _tempid_ ));
+
+			#endwhile
+
+			// Based on the type, call the appropriate library
+			// routine to print this value.
+
+			#if( _pType_ = hla.ptBoolean ) 
+				str._put_( str.catbool, boolean )
+
+			#elseif( _pType_ = hla.ptUns8 ) 
+				str._put_( str.catu8, uns8 )
+
+			#elseif( _pType_ = hla.ptUns16 ) 
+				str._put_( str.catu16, uns16 )
+
+			#elseif( _pType_ = hla.ptUns32 ) 
+				str._put_( str.catu32, uns32 )
+
+			#elseif( _pType_ = hla.ptByte ) 
+				str._put_( str.catb, byte )
+
+			#elseif( _pType_ = hla.ptWord ) 
+				str._put_( str.catw, word )
+
+			#elseif( _pType_ = hla.ptDWord ) 
+				str._put_( str.catd, dword )
+
+			#elseif( _pType_ = hla.ptInt8 ) 
+				str._put_( str.cati8, int8 )
+
+			#elseif( _pType_ = hla.ptInt16 ) 
+				str._put_( str.cati16, int16 )
+
+			#elseif( _pType_ = hla.ptInt32 ) 
+				str._put_( str.cati32, int32 )
+
+			#elseif( _pType_ = hla.ptChar ) 
+				str._put_( str.catc, char )
+
+			#elseif( _pType_ = hla.ptCset ) 
+				str._put_( str.catcset, cset )
+
+			#elseif( _pType_ = hla.ptReal32 ) 
+				str._put_( str.catr32, real32 )
+
+			#elseif( _pType_ = hla.ptReal64 ) 
+				str._put_( str.catr64, real64 )
+
+			#elseif( _pType_ = hla.ptReal80 ) 
+				str._put_( str.catr80, real80 )
+
+			#elseif( _pType_ = hla.ptString ) 
+				str._put_( str.cats, string )
+
+			#elseif( @isclass( @text( _parameters_[ _curparm_ ] )))
+
+				#if
+				( 
+					@defined
+					( 
+						@text( _parameters_[ _curparm_ ] + ".toString" )
+					)
+				)
+
+					push( eax );
+					push( esi );
+					push( edi );
+					@text
+					( 
+						_parameters_[ _curparm_ ] + 
+						".toString()"
+					);
+					str.cat( (type string eax), _destStr_ );
+					strfree( eax );
+					pop( edi );
+					pop( esi );
+					pop( eax );
+					
+				#else
+
+					#error
+					(
+						"stdout.put: Class does not provide a toString " +
+						"method or procedure"
+					);
+
+				#endif
+
+			#else
+
+				#error
+				( 
+					"str.put: Unknown data type (" +
+					_parameters_[ _curparm_ ] +
+					":" +
+					@typename( @text( _id_ )) +
+					")"
+				);
+
+			#endif
+			?_curparm_ := _curparm_ + 1;
+
+		#endwhile
+
+		// The following is stuck here just to require
+		// that the user end the str.put(--) invocation
+		// with a semicolon.
+
+		static
+			;
+		endstatic
+
+
+	#endmacro;
+
+end str;
+
+
+#endif

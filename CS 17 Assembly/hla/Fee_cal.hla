@@ -1,0 +1,132 @@
+//   File:   Fee_cal
+//   Author: Austin Castellino
+//
+//   Creation Date:  7\9\2018
+//
+//
+//   DESCRIPTION
+//
+//   Program with HlA a Smc Fee calculator which calculate the amount paid for a semester. demonstrate use of loops and proper registers.
+//   Test numbers: '4c' = 688$ & 'CC'
+//
+//       
+//
+//   and get:
+//   Feed me(2 hex digits with the bits prsseeee): CC
+//   Fall Semester
+//   12 units
+//   CA Resident
+//   Parking
+//   Total Fees = $ 688
+//
+//   
+program Fee_cal;
+#include( "stdlib.hhf" );
+ static
+   total : int32 := 0; //32 bit variable
+
+   begin Fee_cal;
+
+   stdout.put("Please enter a number or letters to have you Smc Fee's calculated: "); //prompt
+   stdin.get(BL); //input the number or letters to be calculated into the BL register
+   mov(total,ECX); //total and Ecx
+   mov(BL,AL); //move AL into BL
+   shr(4,AL); //shuffle bits, 4 bits to the right
+   and( %0000_0011, AL ); //bitwise, %0000_0011 goes into AL
+   cmp(AL, 00); //compore the values opf AL and 00
+   je Fall; //Branch if result is false, the results will be true 
+   cmp(AL, 10); //compare AL and 10
+   je Spring; //if spring results are true or false
+   jmp Winter; //jump to winter...unconditional transfer of control
+
+   Fall:
+   stdout.put("Fall Semester", nl); //prompt
+       mov(BL,AL); //Move BL into AL
+       shr(7,AL); //shidt to the right by 7 bits
+       and( %0000_0001, AL ); //goes into AL
+       cmp(AL,1); //compare AL and 1
+       je Total_01; //checks total_01 to see oif results are still valid for the program.
+       add(51, ECX); // Adding 51 to BL increases the total fee amount by "51"
+       jmp val_Res; //transfer of control to val_Res
+
+   Spring:
+        stdout.put("Spring Semester", nl); //prompt
+        mov(BL,AL); //using same registers and no new variables cause HLA, the BL price compunds in each code section
+        shr(7,AL); //shift to the right by 7 bits
+        and( %0000_0001, AL ); //hex address and AL
+        cmp(AL,1); //compare AL and 1
+        je Total_01; //checks to see if results are still useful
+        stdout.put("No parking", nl);
+        add(51, ECX); //add 51 to ECX for spring fees
+        jmp val_Res; //transfer of control to Val_res if results are not acceptable
+
+   Student_parking:
+        stdout.put("Parking", nl); 
+       add(136, ECX); //Adds the parking fee to the program
+       jmp val_Res; //transfer to val_res if results are bad
+
+   Winter:
+        cmp(AL, 11); //compare al and 11
+        je Summer; //checks to see if summer results are useful or not
+        stdout.put("Winter Semester", nl); //prompt
+       mov(BL,AL); //move BL into AL
+       shr(7,AL); //Shift 7 bits to the right
+       and( %0000_0001, AL ); // hex value of 1 or 0, 
+       cmp(AL,1); //compare al to 1
+       je Total_01; //checks results to see if they can be used in the total_01 function
+       stdout.put("No Parking", nl);
+       add(51, ECX); //add 51 to Ecx for every unit 
+       jmp val_Res; //transfer control to val_res
+
+       Summer:
+       stdout.put("Summer Semester", nl); //prompt
+       mov(BL,AL); //moves Bl into AL
+       shr(7,AL); //shift to right by 7 bits
+       and( %0000_0001, AL ); //takes in hex value and coverts it
+       cmp(AL,1); //compare Al to 1
+       je Total_01; //check if results can used for total_01
+       stdout.put("No parking");
+       add(51, ECX); //add 51 for every unit into the ecx register
+       jmp val_Res; //transfer control to val_res after the code the runs through
+   Total_01:
+        stdout.put("Parking", nl);
+       add(133, ECX); //adds 133 for every unit for fall, winter, summer in the previous functions to ECX
+       jmp val_Res; //jump to val_res
+
+   val_Res:
+       mov(BL,AL); //move BL into AL
+       shr(6,AL); //shift to the right by 6 bits
+       and( %0000_0001, AL ); //hex value and AL
+       cmp(AL,1); //compare AL to 1
+       je Res; //checks results for RES
+       stdout.put("Non-Resident", nl);
+       mov(335,EDX); //adds 335 for every unit to EDX
+       jmp val_cal; //transfer control to Calc units
+   Res:
+        stdout.put("CA Resident", nl);
+       mov(46,EDX); //add 46 for every unit into EDX
+       jmp val_cal; //transfer control to CalcUnit
+
+   val_cal:
+
+   ForLp: //loop begin
+   mov(BL, AL); //move Bl in AL
+   and(%0000_1111, AL); //hex and Al
+   stdout.puti8(AL); //reads AL, the number of unit from BL
+   stdout.put(" units", nl);
+   ForLpTerminationTest:
+   cmp(AL, 0); //checks to see if AL has a valid value
+   jle ForLpDone;
+   ForLpBody:
+   add(EDX, ECX); //add EDX and ECX
+   ForLpDecrement:
+   dec(AL); //Decrease AL til zero
+   jmp ForLpTerminationTest; //end loop
+   ForLpDone: //end
+
+   stdout.put("Total Fees = $");
+   stdout.puti32(ECX);
+
+   end Fee_cal;
+
+   //Notes very tough without the multiplication. Interesting that the BL registers are being moved around. 

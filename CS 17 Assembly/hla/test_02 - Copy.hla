@@ -1,0 +1,29 @@
+program sequenceGeneration;
+
+#include( "stdio.hhf" );
+
+        var num: int8;
+
+        // Read number from user
+
+        stdout.put( "Gimme a decimal value to use as n: " );
+
+        stdin.geti8(num);
+
+        // Parse from 1 to that number
+
+        #for (di := 1 to num
+
+            stdout.put(nl)
+
+          // Print the pattern
+
+            #for(dj := 1 to num)
+
+                stdout.put(di);
+
+            #endfor                              
+
+        #endfor;
+
+end sequenceGeneration;

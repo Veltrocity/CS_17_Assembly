@@ -1,0 +1,90 @@
+program test_03;
+
+#include( "stdlib.hhf" );
+    static
+        val_01: int16 := 0;
+        val_02: int16 := 0;
+        val_03: int16 := 0;
+        temp_pad : int16;
+
+        procedure middle_num (x: int16, y: int16, z:int16);
+
+        return_add: returnword;
+        temp: int16;
+
+begin middle_num;
+
+    //Bring lopcal vars to front of the stack
+    pop(return_add);
+    pop(x);
+    pop(y);
+    pop(z);
+    push(return_add);
+
+    //Keep BX
+    push(BX);
+
+    mov(x, BX);
+    cmp(BX, y);
+    jg XgreaterthanY;
+    jl XlessthanY;
+    je XequalsY;
+
+    XgreaterthanY;
+
+        mov(y, BX);
+        cmp(BX, z);
+        je No_mid;
+        jg YgreaterthanZ;
+
+        mov(x, BX);
+        cmp(BX, z);
+        je No_mid;
+        jg XgreaterthanZ;
+        mov(x, BX);
+        mov(0, AL);
+        stdout.put(x, " is the middle number", nl);
+        stdout.newln();
+        jmp EndFunction;
+
+            YgreaterthanZ;
+            mov(y, BX);
+            mov(0, AL);
+            stdout.put(y,  " is the middle number", nl);
+            //stdout.newln();
+            jmp EndFunction
+
+            XgreaterthanZ;
+            mov(z, BX);
+            mov(0, AL);
+            stdout.put(z, " is the middle number", nl);
+            jmp EndFunction;
+
+        XlessthanY;
+        mov(x, BX);
+        cmp(BX, z);
+        je mo_mid;
+        jg XgreaterthanZ2;
+
+        mov(y, BX);
+        cmp(BX, z);
+        je no_mid;
+        jg YgreaterthanZ2;
+
+        mov(y, BX);
+        mov(0, AL);
+        stdout.put(y, " is the middle number", nl);
+        stdout.newln();
+        jmp EndFunction;
+
+            XgreaterthanZ2;
+            mov(x, BX)
+
+
+
+            
+
+
+
+end test_03;
+

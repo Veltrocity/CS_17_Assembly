@@ -1,0 +1,58 @@
+program test_02;
+
+#include( "stdlib.hhf" );
+
+static
+
+    iDatavalue : int8;
+
+    Begin test_02;
+
+    stdout.put("Gimme a decimal value to use as n");
+    stdin.get(iDatavalue);
+
+    mov(iDatavalue,BH);
+
+    DoWhileLp:
+
+    DoWhileLpBody:
+
+    ForLp:
+
+    InitializeForLp:
+
+    mov(BH, CH);
+
+    ForLpTerminationTest:
+
+    cmp(CH, 0);
+
+    jnl ForLpDone;
+
+    ForLpBody:
+
+    stdout.put("I= ", CH,n1);
+
+    ForLpIncrement:
+
+    dec(CH);
+
+    jmp ForLpTerminationTest;
+
+    ForLpDone:
+
+    dec(CH);
+
+    DOWhileLpTermination:
+
+    cmp(CH,0);
+
+    jng DoWhileLpDone;
+
+    jmp DoWhileLpBody;
+
+    DoWhileLpDone:
+
+    stdout.puti8(BH);
+
+  end test_02;

@@ -1,0 +1,918 @@
+
+#if( ! @defined( math_hhf ));
+?math_hhf := true;
+
+#includeonce( "hla.hhf" )
+
+namespace math; @fast;
+
+	const
+		SaveParmOffset := @parmoffset;
+		
+	// The following procedures all use ESP to access their
+	// parameters.  Therefore, we've got to set an explicit
+	// parmoffset value for each of these.
+	//
+	//	WARNING: These @parmoffset assignments must be kept
+	//	in sync with the actual source code.  See the source
+	//	code for details.
+	
+	?@parmoffset := 12;
+	procedure addq( left:qword; right:qword; var dest:qword ); 
+		@external( "MATH_ADDQ" );
+	
+	
+	?@parmoffset := 12;
+	procedure addl( left:lword; right:lword; var dest:lword ); 
+		@external( "MATH_ADDL" );
+
+	?@parmoffset := 12;
+	procedure subq( left:qword; right:qword; var dest:qword ); 
+		@external( "MATH_SUBQ" );
+	
+	?@parmoffset := 12;
+	procedure subl( left:lword; right:lword; var dest:lword ); 
+		@external( "MATH_SUBL" );
+
+	?@parmoffset := 12;
+	procedure andq( left:qword; right:qword; var dest:qword ); 
+		@external( "MATH_ANDQ" );
+
+	?@parmoffset := 12;
+	procedure andl( left:lword; right:lword; var dest:lword ); 
+		@external( "MATH_ANDL" );
+
+	?@parmoffset := 12;
+	procedure orq( left:qword; right:qword; var dest:qword ); 
+		@external( "MATH_ORQ" );
+
+	?@parmoffset := 12;
+	procedure orl( left:lword; right:lword; var dest:lword ); 
+		@external( "MATH_ORL" );
+
+	?@parmoffset := 12;
+	procedure xorq( left:qword; right:qword; var dest:qword ); 
+		@external( "MATH_XORQ" );
+
+	?@parmoffset := 12;
+	procedure xorl( left:lword; right:lword; var dest:lword ); 
+		@external( "MATH_XORL" );
+
+
+	?@parmoffset := 20;
+	procedure shlq( count:dword; source:qword; var dest:qword ); 
+		@external( "MATH_SHLQ" );
+
+	?@parmoffset := 20;
+	procedure shrq( count:dword; source:qword; var dest:qword ); 
+		@external( "MATH_SHRQ" );
+
+	?@parmoffset := 20;
+	procedure shll( count:dword; source:lword; var dest:lword ); 
+		@external( "MATH_SHLL" );
+
+	?@parmoffset := 20;
+	procedure shrl( count:dword; source:lword; var dest:lword ); 
+		@external( "MATH_SHRL" );
+		
+		
+		
+	?@parmoffset := SaveParmOffset;
+	
+	procedure negq( source:qword; var dest:qword ); 
+		@external( "MATH_NEGQ" );
+
+	procedure negl( source:lword; var dest:lword ); 
+		@external( "MATH_NEGL" );
+		
+		
+	
+	procedure notq( source:qword; var dest:qword ); 
+		@external( "MATH_NOTQ" );
+
+	procedure notl( source:lword; var dest:lword ); 
+		@external( "MATH_NOTL" );
+	
+
+
+
+
+
+	procedure mulq( left:qword; right:qword; var dest:qword );
+		@external( "MATH_MULQ" );
+
+	procedure mull( left:lword; right:lword; var dest:lword );
+		@external( "MATH_MULL" );
+		
+	procedure imulq( left:qword; right:qword; var dest:qword );
+		@external( "MATH_IMULQ" );
+
+	procedure imull( left:lword; right:lword; var dest:lword );
+		@external( "MATH_IMULL" );
+
+	procedure divq( left:qword; right:qword; var dest:qword ); 
+		@external( "MATH_DIVQ" );
+	
+	procedure divl( left:lword; right:lword; var dest:lword ); 
+		@external( "MATH_DIVL" );
+
+	procedure modq( left:qword; right:qword; var dest:qword ); 
+		@external( "MATH_MODQ" );
+	
+	procedure modl( left:lword; right:lword; var dest:lword ); 
+		@external( "MATH_MODL" );
+
+	procedure idivq( left:qword; right:qword; var dest:qword ); 
+		@external( "MATH_IDIVQ" );
+	
+	procedure idivl( left:lword; right:lword; var dest:lword ); 
+		@external( "MATH_IDIVL" );
+
+	procedure imodq( left:qword; right:qword; var dest:qword ); 
+		@external( "MATH_IMODQ" );
+	
+	procedure imodl( left:lword; right:lword; var dest:lword ); 
+		@external( "MATH_IMODL" );
+	
+
+	procedure div64
+	( 
+	    	Dividend:   qword; 
+	    	Divisor:    qword; 
+	    var QuotAdrs:   qword; 
+	    var RmndrAdrs:  qword 
+	);  @external( "MATH_DIV64" );
+
+	procedure div128
+	( 
+	    	Dividend:   lword; 
+	    	Divisor:    lword; 
+	    var QuotAdrs:   lword; 
+	    var RmndrAdrs:  lword 
+	);  @external( "MATH_DIV128" );
+		
+
+
+	#macro cot( parm[] );
+
+		#if( @elements( parm ) = 0 )
+
+			math._cot()
+
+		#elseif( @elements( parm ) = 1 )
+
+			#if( @typename( @text( parm[0] )) = "real32" )
+
+				math.cot32( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real64" )
+
+				math.cot64( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real80" )
+
+				math.cot80( @text( parm[0] ))
+
+			#else
+
+				#error( "Expected a REAL type" );
+
+			#endif
+
+		#else
+
+			#error( "Illegal number of parameters" );
+
+		#endif
+
+	#endmacro;
+
+	procedure _cot; 					@returns( "st0" ); 
+			@external( "MATH__COT" );
+
+	procedure cot32( r32:real32 );		@returns( "st0" ); 
+			@external( "MATH_COT32" );
+
+	procedure cot64( r64:real64 );		@returns( "st0" ); 
+			@external( "MATH_COT64" );
+
+	procedure cot80( r80:real80 );		@returns( "st0" ); 
+			@external( "MATH_COT80" );
+
+
+
+
+
+
+
+
+
+
+	#macro csc( parm[] );
+
+		#if( @elements( parm ) = 0 )
+
+			math._csc()
+
+		#elseif( @elements( parm ) = 1 )
+
+			#if( @typename( @text( parm[0] )) = "real32" )
+
+				math.csc32( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real64" )
+
+				math.csc64( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real80" )
+
+				math.csc80( @text( parm[0] ))
+
+			#else
+
+				#error( "Expected a REAL type" );
+
+			#endif
+
+		#else
+
+			#error( "Illegal number of parameters" );
+
+		#endif
+
+	#endmacro;
+
+	procedure _csc;						@returns( "st0" ); 
+			@external( "MATH__CSC" );
+
+	procedure csc32( r: real32 ); 		@returns( "st0" ); 
+			@external( "MATH_CSC32" );
+
+	procedure csc64( r: real64 ); 		@returns( "st0" ); 
+			@external( "MATH_CSC64" );
+
+	procedure csc80( r: real80 ); 		@returns( "st0" ); 
+			@external( "MATH_CSC80" );
+
+
+
+
+
+
+	#macro sec( parm[] );
+
+		#if( @elements( parm ) = 0 )
+
+			math._sec()
+
+		#elseif( @elements( parm ) = 1 )
+
+			#if( @typename( @text( parm[0] )) = "real32" )
+
+				math.sec32( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real64" )
+
+				math.sec64( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real80" )
+
+				math.sec80( @text( parm[0] ))
+
+			#else
+
+				#error( "Expected a REAL type" );
+
+			#endif
+
+		#else
+
+			#error( "Illegal number of parameters" );
+
+		#endif
+
+	#endmacro;
+
+	procedure _sec;						@returns( "st0" ); 
+			@external( "MATH__SEC" );
+
+	procedure sec32( r:real32 ); 		@returns( "st0" ); 
+			@external( "MATH_SEC32" );
+
+	procedure sec64( r:real64 ); 		@returns( "st0" ); 
+			@external( "MATH_SEC64" );
+
+	procedure sec80( r:real80 ); 		@returns( "st0" ); 
+			@external( "MATH_SEC80" );
+
+
+	
+
+
+	#macro asin( parm[] );
+
+		#if( @elements( parm ) = 0 )
+
+			math._asin()
+
+		#elseif( @elements( parm ) = 1 )
+
+			#if( @typename( @text( parm[0] )) = "real32" )
+
+				math.asin32( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real64" )
+
+				math.asin64( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real80" )
+
+				math.asin80( @text( parm[0] ))
+
+			#else
+
+				#error( "Expected a REAL type" );
+
+			#endif
+
+		#else
+
+			#error( "Illegal number of parameters" );
+
+		#endif
+
+	#endmacro;
+
+	
+	procedure _asin; 					@returns( "st0" ); 
+			@external( "MATH__ASIN" );
+
+	procedure asin32( r:real32 ); 		@returns( "st0" ); 
+			@external( "MATH_ASIN32" );
+
+	procedure asin64( r:real64 ); 		@returns( "st0" ); 
+			@external( "MATH_ASIN64" );
+
+	procedure asin80( r:real80 ); 		@returns( "st0" ); 
+			@external( "MATH_ASIN80" );
+
+
+
+	
+
+
+	#macro acos( parm[] );
+
+		#if( @elements( parm ) = 0 )
+
+			math._acos()
+
+		#elseif( @elements( parm ) = 1 )
+
+			#if( @typename( @text( parm[0] )) = "real32" )
+
+				math.acos32( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real64" )
+
+				math.acos64( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real80" )
+
+				math.acos80( @text( parm[0] ))
+
+			#else
+
+				#error( "Expected a REAL type" );
+
+			#endif
+
+		#else
+
+			#error( "Illegal number of parameters" );
+
+		#endif
+
+	#endmacro;
+
+	
+	procedure _acos; 					@returns( "st0" ); 
+			@external( "MATH__ACOS" );
+
+	procedure acos32( r:real32 ); 		@returns( "st0" ); 
+			@external( "MATH_ACOS32" );
+
+	procedure acos64( r:real64 ); 		@returns( "st0" ); 
+			@external( "MATH_ACOS64" );
+
+	procedure acos80( r:real80 ); 		@returns( "st0" ); 
+			@external( "MATH_ACOS80" );
+
+
+	
+	
+	
+	
+
+	#macro acot( parm[] );
+
+		#if( @elements( parm ) = 0 )
+
+			math._acot()
+
+		#elseif( @elements( parm ) = 1 )
+
+			#if( @typename( @text( parm[0] )) = "real32" )
+
+				math.acot32( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real64" )
+
+				math.acot64( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real80" )
+
+				math.acot80( @text( parm[0] ))
+
+			#else
+
+				#error( "Expected a REAL type" );
+
+			#endif
+
+		#else
+
+			#error( "Illegal number of parameters" );
+
+		#endif
+
+	#endmacro;
+
+	
+	
+	procedure _acot; 					@returns( "st0" ); 
+			@external( "MATH__ACOT" );
+
+	procedure acot32( r:real32 ); 		@returns( "st0" ); 
+			@external( "MATH_ACOT32" );
+
+	procedure acot64( r:real64 ); 		@returns( "st0" ); 
+			@external( "MATH_ACOT64" );
+
+	procedure acot80( r:real80 ); 		@returns( "st0" ); 
+			@external( "MATH_ACOT80" );
+
+
+
+
+	
+
+
+	#macro acsc( parm[] );
+
+		#if( @elements( parm ) = 0 )
+
+			math._acsc()
+
+		#elseif( @elements( parm ) = 1 )
+
+			#if( @typename( @text( parm[0] )) = "real32" )
+
+				math.acsc32( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real64" )
+
+				math.acsc64( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real80" )
+
+				math.acsc80( @text( parm[0] ))
+
+			#else
+
+				#error( "Expected a REAL type" );
+
+			#endif
+
+		#else
+
+			#error( "Illegal number of parameters" );
+
+		#endif
+
+	#endmacro;
+
+	
+	procedure _acsc;					@returns( "st0" ); 
+			@external( "MATH__ACSC" );
+
+	procedure acsc64( r:real64 ); 		@returns( "st0" ); 
+			@external( "MATH_ACSC64" );
+
+	procedure acsc32( r:real32 ); 		@returns( "st0" ); 
+			@external( "MATH_ACSC32" );
+
+	procedure acsc80( r:real80 ); 		@returns( "st0" ); 
+			@external( "MATH_ACSC80" );
+
+
+
+
+	
+
+
+	#macro asec( parm[] );
+
+		#if( @elements( parm ) = 0 )
+
+			math._asec()
+
+		#elseif( @elements( parm ) = 1 )
+
+			#if( @typename( @text( parm[0] )) = "real32" )
+
+				math.asec32( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real64" )
+
+				math.asec64( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real80" )
+
+				math.asec80( @text( parm[0] ))
+
+			#else
+
+				#error( "Expected a REAL type" );
+
+			#endif
+
+		#else
+
+			#error( "Illegal number of parameters" );
+
+		#endif
+
+	#endmacro;
+
+	
+	procedure _asec; 					@returns( "st0" ); 
+			@external( "MATH__ASEC" );
+
+	procedure asec32( r:real32 ); 		@returns( "st0" ); 
+			@external( "MATH_ASEC32" );
+
+	procedure asec64( r:real64 ); 		@returns( "st0" ); 
+			@external( "MATH_ASEC64" );
+
+	procedure asec80( r:real80 ); 		@returns( "st0" ); 
+			@external( "MATH_ASEC80" );
+
+
+
+
+	
+
+
+	#macro TwoToX( parm[] );
+
+		#if( @elements( parm ) = 0 )
+
+			math._TwoToX()
+
+		#elseif( @elements( parm ) = 1 )
+
+			#if( @typename( @text( parm[0] )) = "real32" )
+
+				math.TwoToX32( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real64" )
+
+				math.TwoToX64( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real80" )
+
+				math.TwoToX80( @text( parm[0] ))
+
+			#else
+
+				#error( "Expected a REAL type" );
+
+			#endif
+
+		#else
+
+			#error( "Illegal number of parameters" );
+
+		#endif
+
+	#endmacro;
+
+	
+	procedure _TwoToX;					@returns( "st0" ); 
+			@external( "MATH__TWOTOX" );
+
+	procedure TwoToX32( r:real32 );		@returns( "st0" ); 
+			@external( "MATH_TWOTOX32" );
+
+	procedure TwoToX64( r:real64 );		@returns( "st0" ); 
+			@external( "MATH_TWOTOX64" );
+
+	procedure TwoToX80( r:real80 );		@returns( "st0" ); 
+			@external( "MATH_TWOTOX80" );
+
+
+
+
+
+	
+
+
+	#macro TenToX( parm[] );
+
+		#if( @elements( parm ) = 0 )
+
+			math._TenToX()
+
+		#elseif( @elements( parm ) = 1 )
+
+			#if( @typename( @text( parm[0] )) = "real32" )
+
+				math.TenToX32( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real64" )
+
+				math.TenToX64( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real80" )
+
+				math.TenToX80( @text( parm[0] ))
+
+			#else
+
+				#error( "Expected a REAL type" );
+
+			#endif
+
+		#else
+
+			#error( "Illegal number of parameters" );
+
+		#endif
+
+	#endmacro;
+
+	
+	procedure _TenToX;					@returns( "st0" ); 
+			@external( "MATH__TENTOX" );
+
+	procedure TenToX32( r:real32 ); 	@returns( "st0" ); 
+			@external( "MATH_TENTOX32" );
+
+	procedure TenToX64( r:real64 ); 	@returns( "st0" ); 
+			@external( "MATH_TENTOX64" );
+
+	procedure TenToX80( r:real80 ); 	@returns( "st0" ); 
+			@external( "MATH_TENTOX80" );
+
+
+
+
+
+	
+
+
+	#macro exp( parm[] );
+
+		#if( @elements( parm ) = 0 )
+
+			math._exp()
+
+		#elseif( @elements( parm ) = 1 )
+
+			#if( @typename( @text( parm[0] )) = "real32" )
+
+				math.exp32( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real64" )
+
+				math.exp64( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real80" )
+
+				math.exp80( @text( parm[0] ))
+
+			#else
+
+				#error( "Expected a REAL type" );
+
+			#endif
+
+		#else
+
+			#error( "Illegal number of parameters" );
+
+		#endif
+
+	#endmacro;
+
+	
+	procedure _exp; 					@returns( "st0" ); 
+			@external( "MATH__EXP" );
+
+	procedure exp32( r:real32 ); 		@returns( "st0" ); 
+			@external( "MATH_EXP32" );
+
+	procedure exp64( r:real64 ); 		@returns( "st0" ); 
+			@external( "MATH_EXP64" );
+
+	procedure exp80( r:real80 ); 		@returns( "st0" ); 
+			@external( "MATH_EXP80" );
+
+
+
+
+
+
+	
+
+
+	#macro YtoX( parm[] );
+
+		#if( @elements( parm ) = 0 )
+
+			math._YtoX()
+
+		#elseif( @elements( parm ) = 2 )
+
+			#if
+			( 
+					@typename( @text( parm[0] )) = "real32" 
+				&	@typename( @text( parm[1] )) = "real32" 
+			)
+
+				math.YtoX32( @text( parm[0] ), @text( parm[1] ))
+
+			#elseif
+			( 
+					@typename( @text( parm[0] )) = "real64" 
+				&	@typename( @text( parm[1] )) = "real64" 
+			)
+
+
+				math.YtoX64( @text( parm[0] ), @text( parm[1] ))
+
+			#elseif
+			( 
+					@typename( @text( parm[0] )) = "real80" 
+				&	@typename( @text( parm[1] )) = "real80" 
+			)
+
+
+				math.YtoX80( @text( parm[0] ), @text( parm[1] ))
+
+			#else
+
+				#error( "Expected a REAL type" );
+
+			#endif
+
+		#else
+
+			#error( "Illegal number of parameters" );
+
+		#endif
+
+	#endmacro;
+
+	
+	procedure _YtoX;							@returns( "st0" ); 
+			@external( "MATH__YTOX" );
+
+	procedure YtoX32( y:real32; x:real32 );		@returns( "st0" ); 
+			@external( "MATH_YTOX32" );
+
+	procedure YtoX64( y:real64; x:real64 );		@returns( "st0" ); 
+			@external( "MATH_YTOX64" );
+
+	procedure YtoX80( y:real80; x:real80 );		@returns( "st0" ); 
+			@external( "MATH_YTOX80" );
+
+
+
+
+
+
+
+	
+
+
+	#macro log( parm[] );
+
+		#if( @elements( parm ) = 0 )
+
+			math._log()
+
+		#elseif( @elements( parm ) = 1 )
+
+			#if( @typename( @text( parm[0] )) = "real32" )
+
+				math.log32( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real64" )
+
+				math.log64( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real80" )
+
+				math.log80( @text( parm[0] ))
+
+			#else
+
+				#error( "Expected a REAL type" );
+
+			#endif
+
+		#else
+
+			#error( "Illegal number of parameters" );
+
+		#endif
+
+	#endmacro;
+
+	
+	procedure _log; 					@returns( "st0" ); 
+			@external( "MATH__LOG" );
+
+	procedure log32( r:real32 ); 		@returns( "st0" ); 
+			@external( "MATH_LOG32" );
+
+	procedure log64( r:real64 ); 		@returns( "st0" ); 
+			@external( "MATH_LOG64" );
+
+	procedure log80( r:real80 ); 		@returns( "st0" ); 
+			@external( "MATH_LOG80" );
+
+
+
+
+
+
+
+	
+
+
+	#macro ln( parm[] );
+
+		#if( @elements( parm ) = 0 )
+
+			math._ln()
+
+		#elseif( @elements( parm ) = 1 )
+
+			#if( @typename( @text( parm[0] )) = "real32" )
+
+				math.ln32( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real64" )
+
+				math.ln64( @text( parm[0] ))
+
+			#elseif( @typename( @text( parm[0] )) = "real80" )
+
+				math.ln80( @text( parm[0] ))
+
+			#else
+
+				#error( "Expected a REAL type" );
+
+			#endif
+
+		#else
+
+			#error( "Illegal number of parameters" );
+
+		#endif
+
+	#endmacro;
+
+	
+	procedure _ln; 						@returns( "st0" ); 
+			@external( "MATH__LN" );
+
+	procedure ln32( r:real32 ); 		@returns( "st0" ); 
+			@external( "MATH_LN32" );
+
+	procedure ln64( r:real64 ); 		@returns( "st0" ); 
+			@external( "MATH_LN64" );
+
+	procedure ln80( r:real80 ); 		@returns( "st0" ); 
+			@external( "MATH_LN80" );
+
+
+end math;
+
+
+#endif
+

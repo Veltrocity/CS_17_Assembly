@@ -1,0 +1,136 @@
+// String Parameter Template Solution For CS 17 Final
+// CS 17 Students must use this template as the basis for their solution. 
+// I hope it will help simplify your development task.
+
+// Please look at the two TODO: notes below
+
+program StringProgram;
+
+#include( "stdlib.hhf" ); 
+// The file cs17Final.hla is downloadable from the hyperlink shown above.
+// Place it in the same folder as this hla file you are working on
+
+#include( "cs17Final.hla" );
+//file included
+
+static stringData : dword;
+i : int32 := 0; //added variables
+count : int32 := 0;// count for the loop later used
+
+
+// TODO: CS 17 Students add code below to implement this function
+// Several hints are supplied
+
+procedure countNonLowerCase( stringData : dword ); @nodisplay; @noframe;
+static
+dReturnAddress : dword;
+temp : int32;
+letter : int32;
+
+begin countNonLowerCase;
+// TODO: CS 17 Students will need to preserve registers
+    pop( dReturnAddress ); // this is the return address
+    pop(temp);
+    pop(EAX);
+    pop(EBX);
+    pop(ECX);
+
+    // push back the return address
+    push( dReturnAddress );
+
+
+// preserve registers
+    push(EAX);
+    push(EBX);
+    push(ECX);
+
+//eax,ebx, push or pop. bring to front of stack
+
+// begin sub-task
+//while ( stringData != 0)  do
+While;
+    mov(letter, [EAX]);
+
+
+    //the if portion
+    mov(EAX, letter); //mov EAX in letter
+    cmp(letter, 122); //is letter equal to 122?
+    and(letter, EAX); //and (letter, eax), still using the values
+    cmp(letter, 97); //compare letter to 97
+
+    
+
+    add(1, count);
+    add([EAX], 1 );
+endwhile;
+
+
+
+
+
+// leave the count in EAX
+mov(count, EAX);
+
+// restore the registers used
+push(letter);
+push(temp);
+pop(EAX);
+
+
+
+ret();
+
+end countNonLowerCase;
+
+begin StringProgram; 
+
+stdout.put( "Please enter a string to process", nl );
+
+// this code allocates a string of size 80
+
+mov( @size( int8 ), AL );
+mov( 80, BL );
+inc( BL );
+mul( BL );
+mov( 0, EBX );
+mov( AX, BX );
+malloc( EBX );
+mov( EAX, stringData );
+
+// let's try reading a value into the string
+mov( stringData, EAX );
+push( EAX );
+mov( 80, CX );
+push( CX );
+
+call gets;
+
+// print the string
+
+stdout.put( "----> here is the string you entered: " );
+
+mov( stringData, EAX );
+push( EAX );
+call puts;
+
+stdout.newln();
+
+// initialize EAX before calling the function.
+
+mov( 0, EAX );
+
+
+// TODO: send a string parameter to the function
+
+push(EAX);
+
+
+call countNonLowerCase;
+
+
+// show the results
+stdout.put( "result=" );
+stdout.put( EAX );
+stdout.newln();
+
+end StringProgram;

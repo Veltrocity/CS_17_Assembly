@@ -1,0 +1,179 @@
+
+#if( ! @defined( memory_hhf ));
+?memory_hhf := 1;
+
+
+const
+	nil :text := "NULL";
+
+	procedure malloc( size:dword ); 
+		@returns( "eax" ); 
+		@external( "MEM_ALLOC" );
+
+	procedure free( memptr:dword ); 
+		@external( "MEM_FREE" );
+
+	procedure realloc( memptr:dword; newsize:dword );  
+		@returns( "eax" ); 
+		@external( "MEM_REALLOC" );
+
+	procedure isInHeap( memptr:dword );
+		@returns( "eax" );
+		@external( "MEM_ISINHEAP" );
+
+	#macro talloc( size );
+
+		mov( and( $FFFF_FFFC, sub( size, esp )), eax )
+
+	#endmacro
+	
+
+	procedure stralloc( size:dword ); 
+		@returns( "eax" ); 
+		@external( "STR_ALLOC" );
+
+	procedure strrealloc( theStr:dword; size:dword ); 
+		@returns( "eax" ); 
+		@external( "STR_REALLOC" );
+
+	procedure strfree( memptr:dword ); 
+		@external( "STR_FREE" );
+
+	procedure strIsInHeap( memptr:dword );
+		@returns( "eax" );
+		@external( "STR_ISINHEAP" );
+
+
+
+	#macro tstralloc( size );
+
+		returns
+		(
+			{
+				#if( @IsConst( size ))
+
+					sub( size+9, esp );
+
+				#else
+
+					mov( size, eax );
+					add( 9, eax );
+					sub( eax, esp );
+
+				#endif
+				and( $FFFF_FFFC, esp );
+				lea( eax, [esp+8] );
+				mov( size, (type dword [esp]));
+				mov( 0, (type dword [esp+4]));
+				mov( 0, (type byte [eax]));
+			},
+			"eax"
+		)
+
+	#endmacro
+
+namespace mem;
+
+	procedure alloc( size:dword ); 
+		@returns( "eax" ); 
+		@external( "MEM_ALLOC" );
+		
+	procedure zalloc( size:dword );
+		@returns( "eax" ); 
+		@external( "MEM_ZALLOC" );
+
+	procedure free( memptr:dword ); 
+		@external( "MEM_FREE" );
+
+	procedure realloc( memptr:dword; newsize:dword );  
+		@returns( "eax" ); 
+		@external( "MEM_REALLOC" );
+
+	procedure isInHeap( memptr:dword );
+		@returns( "eax" );
+		@external( "MEM_ISINHEAP" );
+
+	procedure stat;
+		@returns( "eax" );
+		@external( "MEM_STAT" );
+
+	procedure newref( memptr:dword );
+		@external( "MEM_NEWREF" );
+
+	procedure getref( memptr:dword );
+		@external( "MEM_GETREF" );
+		
+	iterator blockInHeap;
+		@external( "MEM_BLOCKINHEAP" );
+		
+	iterator freeBlockInHeap;
+		@external( "MEM_FREEBLOCKINHEAP" );
+
+
+	#macro talloc( size );
+
+		mov( and( $FFFF_FFFC, sub( size, esp )), eax )
+
+	#endmacro;
+
+
+end mem;
+
+
+namespace str;
+
+	procedure alloc( size:dword ); 
+		@returns( "eax" ); 
+		@external( "STR_ALLOC" );
+
+	procedure realloc( theStr:dword; size:dword ); 
+		@returns( "eax" ); 
+		@external( "STR_REALLOC" );
+
+	procedure free( memptr:dword ); 
+		@external( "STR_FREE" );
+
+	procedure isInHeap( memptr:dword );
+		@returns( "eax" );
+		@external( "STR_ISINHEAP" );
+
+	procedure newref( memptr:dword );
+		@external( "STR_NEWREF" );
+
+	procedure getref( memptr:dword );
+		@external( "STR_GETREF" );
+
+
+	#macro talloc( size );
+
+		returns
+		(
+			{
+				#if( @IsConst( size ))
+
+					sub( size+9, esp );
+
+				#else
+
+					mov( size, eax );
+					add( 9, eax );
+					sub( eax, esp );
+
+				#endif
+				and( $FFFF_FFFC, esp );
+				lea( eax, [esp+8] );
+				mov( size, (type dword [esp]));
+				mov( 0, (type dword [esp+4]));
+				mov( 0, (type byte [eax]));
+			},
+			"eax"
+		)
+
+	#endmacro;
+	
+	
+end str;
+	
+				 
+#endif
+

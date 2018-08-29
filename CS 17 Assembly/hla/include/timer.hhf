@@ -1,0 +1,43 @@
+#if( ! @defined( timerclass_hhf ));
+?timerclass_hhf := true;
+
+	#includeOnce( "datetime.hhf" )
+	#includeOnce( "stdio.hhf" )
+
+/****************************************************/
+/*                                                  */
+/* 	The TIMER class:                                */
+/*                                                  */
+/****************************************************/
+
+
+
+	type
+
+		timer:	class
+
+					var
+						Accumulated:	qword;
+
+						DateStarted:	date.daterec;
+						TimeStarted:	time.timerec;
+						msStarted:		uns32;
+
+						DateStopped:	date.daterec;
+						TimeStopped:	time.timerec;
+						msStopped:		uns32;
+
+						Running:	boolean;
+						Valid:		boolean;
+
+					procedure create;	@external;
+
+					method start;		@external;
+					method restart;		@external;
+					method stop; @returns( "edx:eax" );	@external;
+					method checkPoint; @returns( "edx:eax" ); @external;
+
+				endclass;
+
+
+#endif

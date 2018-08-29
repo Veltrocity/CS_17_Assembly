@@ -1,0 +1,33 @@
+
+#if( ! @defined( coroutines_hhf ));
+?coroutines_hhf := true;
+
+type
+	coroutine:
+		class
+		
+			var
+				CurrentSP:			dword;
+				Stack:				dword;
+				ExceptionContext:	dword;
+				LastCaller:			dword;
+				
+			procedure cocall;	
+				@external( "COR_COCALL" );
+
+			procedure create( size:uns32; theProc:procedure );
+				@external( "COR_CREATE" );
+
+			method cofree;
+				@external( "COR_COFREE" );
+			
+		endclass;
+
+static
+	mainPgm:coroutine; @external( "MainPgmCoroutine__hla_" );
+
+
+procedure coret; @external( "COR_CORET" );
+
+#endif
+

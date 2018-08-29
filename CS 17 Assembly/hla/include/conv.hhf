@@ -1,0 +1,496 @@
+#if( ! @defined( conv_hhf ));
+?conv_hhf := true;
+
+namespace conv;	@fast;
+
+	procedure setUnderscores( OnOff: boolean ); 
+				@external( "CONV_SETUNDERSCORES" );
+
+	procedure getUnderscores;  
+				@external( "CONV_GETUNDERSCORES" );
+
+	procedure setDelimiters( Delims: cset );  
+				@external( "CONV_SETDELIMITERS" );
+
+	procedure getDelimiters( var Delims: cset );  
+				@external( "CONV_GETDELIMITERS" );
+
+
+	// byteToHex is for internal use only!
+
+	procedure byteToHex( h:dword; var buffer:byte ); 
+			@external("CONV_BYTETOHEX" );
+
+
+	procedure bToBuf;  
+			@external("CONV_BTOBUF" );
+
+	procedure wToBuf;  
+			@external("CONV_WTOBUF" );
+
+	procedure dToBuf;  
+			@external("CONV_DTOBUF" );
+
+	procedure qToBuf ( q:qword );  
+			@external("CONV_QTOBUF" );
+
+	procedure lToBuf ( l:lword );  
+			@external("CONV_LTOBUF" );
+
+
+
+	procedure bToStr ( b:byte; size:dword; fill:char; buffer:string );  
+			@external("CONV_BTOSTR" );
+
+	procedure wToStr ( w:word; size:dword; fill:char; buffer:string );  
+			@external("CONV_WTOSTR" );
+
+	procedure dToStr ( d:dword; size:dword; fill:char; buffer:string );  
+			@external("CONV_DTOSTR" );
+
+	procedure qToStr ( q:qword; size:dword; fill:char; buffer:string );  
+			@external("CONV_QTOSTR" );
+
+	procedure tbToStr( tb:tbyte; size:dword; fill:char; buffer:string );  
+			@external("CONV_TBTOSTR" );
+
+	procedure lToStr ( l:lword; width:int32; fill:char; buffer:string );  
+			@external("CONV_LTOSTR" );
+
+
+
+
+
+	procedure _bSize;  
+			@returns( "eax" );  
+			@external("CONV__BSIZE" );
+
+	procedure bSize( bValue:byte );  
+			@use eax; 
+			@returns( "eax" );  
+			@external("CONV_BSIZE" );
+
+	procedure _wSize;  
+			@returns( "eax" );  
+			@external("CONV__WSIZE" );
+
+	procedure wSize( wValue:word );  
+			@use eax; 
+			@returns( "eax" );  
+			@external("CONV_WSIZE" );
+
+	procedure dSize( dValue:dword );  
+			@returns( "eax" );  
+			@external("CONV_DSIZE" );
+
+	procedure _dSize;  
+			@returns( "eax" );  
+			@external("CONV__DSIZE" );
+
+	procedure qSize( qVal:qword );  
+			@returns( "eax" );  
+			@external("CONV_QSIZE" );
+
+	procedure lSize( lVal:lword );  
+			@returns( "eax" );  
+			@external("CONV_LSIZE" );
+			
+			
+
+	procedure i8Size( iValue:int8 );  
+			@returns( "eax" );  
+			@external("CONV_I8SIZE" );
+
+	procedure _i8Size;  
+			@returns( "eax" );  
+			@external("CONV__I8SIZE" );
+
+	procedure i16Size( iValue:int16 );  
+			@use eax; 
+			@returns( "eax" );  
+			@external("CONV_I16SIZE" );
+
+	procedure _i16Size;  
+			@returns( "eax" );  
+			@external("CONV__I16SIZE" );
+
+	procedure i32Size( iValue:int32 );  
+			@returns( "eax" );  
+			@external("CONV_I32SIZE" );
+
+	procedure _i32Size;  
+			@returns( "eax" );  
+			@external("CONV__I32SIZE" );
+
+	procedure i64Size( q:qword );  
+			@returns( "eax" );  
+			@external("CONV_I64SIZE" );
+
+	procedure i128Size( l:lword );  
+			@returns( "eax" );  
+			@external("CONV_I128SIZE" );
+			
+			
+
+
+	procedure u8Size( uValue:uns8 );
+			@use eax; 
+			@returns( "eax" );  
+			@external("CONV_U8SIZE" );
+
+	procedure _u8Size;
+			@returns( "eax" );  
+			@external("CONV__U8SIZE" );
+
+	procedure u16Size( uValue:uns16 );  
+			@use eax; 
+			@returns( "eax" );  
+			@external("CONV_U16SIZE" );
+
+	procedure _u16Size;  
+			@returns( "eax" );  
+			@external("CONV__U16SIZE" );
+
+	procedure u32Size( uValue:uns32 );  
+			@returns( "eax" );  
+			@external("CONV_U32SIZE" );
+
+	procedure _u32Size;  
+			@returns( "eax" );  
+			@external("CONV__U32SIZE" );
+
+	procedure u64Size( q:qword );  
+			@returns( "eax" );  
+			@external("CONV_U64SIZE" );
+
+	procedure u128Size( u128:lword );  
+			@returns( "eax" );  
+			@external("CONV_U128SIZE" );
+			
+			
+
+
+	procedure i8ToBuf;  
+			@external("CONV_I8TOBUF" );
+
+	procedure i16ToBuf;  
+			@external("CONV_I16TOBUF" );
+
+	procedure i32ToBuf; 
+			@external( "CONV_I32TOBUF" );
+
+	procedure i64ToBuf( q:qword ); 
+			@external( "CONV_I64TOBUF" );
+
+	procedure i128ToBuf( l:lword ); 
+			@external( "CONV_I128TOBUF" );
+
+
+	procedure u8ToBuf; 
+			@external( "CONV_U8TOBUF" );
+
+	procedure u16ToBuf; 
+			@external( "CONV_U16TOBUF" );
+
+	procedure u32ToBuf; 
+			@external( "CONV_U32TOBUF" );
+
+	procedure u64ToBuf( q:qword ); 
+			@external( "CONV_U64TOBUF" );
+
+	procedure u128ToBuf( CurValue:lword ); 
+			@external( "CONV_U128TOBUF" );
+
+
+
+
+	procedure i8ToStr
+	( 
+		b:		byte; 
+		width:	int32;
+		f:		char; 
+		buf:	string 
+	); 
+			@external( "CONV_I8TOSTR" );
+
+
+	procedure i16ToStr
+	( 
+		w:		word; 
+		width:	int32;
+		f:		char; 
+		buf:	string 
+	); 
+			@external( "CONV_I16TOSTR" );
+
+
+	procedure i32ToStr
+	( 
+		d:		dword; 
+		width:	int32;
+		f:		char; 
+		buf:	string 
+	); 
+			@external( "CONV_I32TOSTR" );
+
+
+	procedure i64ToStr
+	( 
+		q:		qword; 
+		width:	int32;
+		fill:	char; 
+		buffer:	string 
+	); 
+			@external( "CONV_I64TOSTR" );
+
+
+	procedure i128ToStr
+	( 
+		l:		lword; 
+		width:	int32;
+		fill:	char; 
+		buffer:	string 
+	); 
+			@external( "CONV_I128TOSTR" );
+
+
+
+
+
+	procedure u8ToStr
+	( 
+		b:		byte; 
+		width:	int32;
+		f:		char; 
+		buf:	string 
+	); 
+			@external( "CONV_U8TOSTR" );
+
+	procedure u16ToStr
+	( 
+		w:		word; 
+		width:	int32;
+		f:		char; 
+		buf:	string 
+	); 
+			@external( "CONV_U16TOSTR" );
+
+
+	procedure u32ToStr
+	( 
+		d:		dword; 
+		width:	int32;
+		f:		char; 
+		buf:	string 
+	); 
+			@external( "CONV_U32TOSTR" );
+
+
+	procedure u64ToStr
+	( 
+		q:		qword; 
+		width:	int32;
+		fill:	char; 
+		buffer:	string 
+	); 
+			@external( "CONV_U64TOSTR" );
+
+
+	procedure u128ToStr
+	( 
+		l:		lword; 
+		width:	int32;
+		fill:	char; 
+		buffer:	string 
+	); 
+			@external( "CONV_U128TOSTR" );
+
+
+
+
+
+
+
+	procedure r80ToStr
+	(
+		r80: 		real80;
+		width:		uns32;
+		decimalpts:	uns32;
+		fill:		char;
+		buffer:		string
+	); 
+			@external( "CONV_R80TOSTR" );
+
+
+	procedure r64ToStr
+	(
+		r64: 		real64;
+		width:		uns32;
+		decimalpts:	uns32;
+		fill:		char;
+		buffer:		string
+	); 
+			@external( "CONV_R64TOSTR" );
+
+
+	procedure r32ToStr
+	(
+		r32: 		real32;
+		width:		uns32;
+		decimalpts:	uns32;
+		fill:		char;
+		buffer:		string
+	); 
+			@external( "CONV_R32TOSTR" );
+
+
+
+	procedure e80ToStr
+	(
+		r80: 		real80;
+		width:		uns32;
+		buffer:		string
+	); 
+			@external( "CONV_E80TOSTR" );
+
+
+	procedure e64ToStr
+	(
+		r64: 		real64;
+		width:		uns32;
+		buffer:		string
+	); 
+			@external( "CONV_E64TOSTR" );
+
+
+	procedure e32ToStr
+	(
+		r32: 		real32;
+		width:		uns32;
+		buffer:		string
+	); 
+			@external( "CONV_E32TOSTR" );
+
+
+
+
+
+
+	procedure atou; 
+			@returns( "eax" );  
+			@external( "CONV_ATOU" );
+
+	procedure atoi; 
+			@returns( "eax" );  
+			@external( "CONV_ATOI" );
+
+	procedure atoh; 
+			@returns( "eax" );  
+			@external( "CONV_ATOH" );
+
+	procedure atof; 
+			@returns( "st0" );  
+			@external( "CONV_ATOF" );
+
+
+
+
+	procedure strToi8( s:string; index:dword ); 
+			@returns( "eax" );  
+			@external( "CONV_STRTOI8" );
+
+	procedure strToi16( s:string; index:dword ); 
+			@returns( "eax" );  
+			@external( "CONV_STRTOI16" );
+
+	procedure strToi32( s:string; index:dword ); 
+			@returns( "eax" );  
+			@external( "CONV_STRTOI32" );
+
+	procedure strToi64( s:string; index:dword ); 
+			@returns( "edx:eax" );  
+			@external( "CONV_STRTOI64" );
+
+	procedure strToi128( s:string; index:dword; var dest:int128 ); 
+			@external( "CONV_STRTOI128" );
+
+
+
+	procedure strTou8( s:string; index:dword ); 
+			@returns( "eax" );  
+			@external( "CONV_STRTOU8" );
+
+	procedure strTou16( s:string; index:dword ); 
+			@returns( "eax" );  
+			@external( "CONV_STRTOU16" );
+
+	procedure strTou32( s:string; index:dword ); 
+			@returns( "eax" );  
+			@external( "CONV_STRTOU32" );
+
+	procedure strTou64( s:string; index:dword ); 
+			@returns( "eax" );  
+			@external( "CONV_STRTOU64" );
+
+	procedure strTou128( s:string; index:dword; var dest:uns128 ); 
+			@external( "CONV_STRTOU128" );
+
+
+
+	procedure strTob( s:string; index:dword ); 
+			@returns( "eax" );  
+			@external( "CONV_STRTOH" );
+
+	procedure strTow( s:string; index:dword ); 
+			@returns( "eax" );  
+			@external( "CONV_STRTOW" );
+
+	procedure strTod( s:string; index:dword ); 
+			@returns( "eax" );  
+			@external( "CONV_STRTOD" );
+
+	procedure strToq( s:string; index:dword ); 
+			@returns( "edx:eax" );  
+			@external( "CONV_STRTOQ" );
+
+	procedure strTol( s:string; index:dword; var dest:lword ); 
+			@external( "CONV_STRTOL" );
+
+
+	procedure strToFlt( s:string; index:dword ); 
+			@external( "CONV_STRTOFLT" );
+
+
+
+
+	procedure cStrToStr( var buffer:var; dest:string ); 
+			@external( "STR_CPYZ" );
+
+	procedure a_cStrToStr( var buffer:var ); @returns( "eax" ); 
+			@external( "STR_A_CPYZ" );
+
+
+	procedure roman( arabic:uns32; rmn:string );
+			@external( "CONV_ROMAN" );
+
+	procedure a_roman( arabic:uns32 ); @returns( "eax" );
+			@external( "CONV_A_ROMAN" );
+
+	procedure utoEng( u:uns32; dest:string );
+			@external( "CONV_UTOENG" );
+
+	procedure a_utoEng( u:uns32 );
+			@external( "CONV_A_UTOENG" );
+
+	procedure utoEngth( u:uns32; dest:string );
+			@external( "CONV_UTOENGTH" );
+
+	procedure a_utoEngth( u:uns32 );
+			@external( "CONV_A_UTOENGTH" );
+
+
+
+
+end conv;
+
+#endif

@@ -1,0 +1,129 @@
+//   File:   Vol_finder_01.hla
+//   Author: Austin Castellino
+//
+//   Creation Date:  july, 20, 2018
+//
+//
+// DESCRIPTION
+//	Write a program using the fpu libary to calculate the volume of a pyramid, cone, cylinder
+//	Demonstrate the use of fpus and multiplying variables and understanding the complications of coding with hla	
+//  
+//	Example
+//Lemme calculate the volumes of various things!
+//Gimme r: 1.0
+//Gimme b: 1.0
+//Gimme h: 1.0
+//Volume of a pyramid = 0.33333 
+//Volume of a cone = 1.04719
+//Volume of a cylinder = 3.14159
+
+//Lemme calculate the volumes of various things!
+//Gimme r: 1.0
+//Gimme b: 1.0
+//Gimme h: 3.0
+//Volume of a pyramid = 1.00000 
+//Volume of a cone = 3.14159
+//Volume of a cylinder = 9.42477
+
+//Lemme calculate the volumes of various things!
+//Gimme r: 2.0
+//Gimme b: 1.0
+//Gimme h: 3.0
+//Volume of a pyramid = 1.00000 
+//Volume of a cone = 12.5663
+//Volume of a cylinder = 37.6991
+
+
+
+program  Vol_finder_01;
+#include( "stdlib.hhf" );
+static
+    r : real32; // var r
+    b : real32; // var b
+    h : real32; //var h
+    pi :real32 := 3.14159; //created pi var to have the value of pi. some answers may vary
+    vol:real32 := 0.33333; //vol var is for calculating 1/3 without the need for division
+    sum:real32 := 0; 	   //sum var for pyramid area total	
+    sum_01:real32 := 0;	   //sum_01 for cone area total
+    sum_02:real32 := 0;    //sum_02 for cylinder area total
+    temp:real32 := 0;
+
+begin Vol_finder_01;
+
+
+  stdout.put("Please enter some numbers to compute the area of a pyramid, cone, cylinder: ", nl); //prompt and pre-text
+  stdout.put ("Enter an r: ");
+  stdin.get( r ); 				//get r
+  stdout.put ("Enter an b: ");
+  stdin.get( b ); 				//get b
+  stdout.put("Enter an h: ");
+  stdin.get( h ); 				//get h
+  //stdout.put(vol, nl, pi, nl);
+
+
+//compute area of a pryamid, Volume = 1 / 3 * b * h
+  finit();
+  fld( b );             // Load b, base
+  fld(vol);				//load vol, 0.33333
+  fmul();				//multiply b and vol
+  fstp(sum);			//save the value into sum for easy reference
+  fld(sum);				//load sum
+  fld( h );             // load h value
+  fmul();               // multiply sum and h
+  fstp( sum );			//save results to sum
+  mov(sum, EBX);
+  //mov(EBX, sum);
+  stdout.put("Pyramid, area: ", sum, nl); //show the area of a pyramid
+  
+
+  //cone, Volume = 1/ 3 * pi * r * r h
+  fld(r);   //find r
+  fld(st0); //r * r
+  fmul();   // r * * r
+  fstp(sum_01); //save the results
+  fld(sum_01);  //load sum_01 
+  fld(pi);		//load pi value, 3.141590
+  fmul();		//multiply pi and sum_01
+  fstp(sum_01);	//save the result in sum_01
+  fld(sum_01);	//load sum_01
+  fld(h);		//load h
+  fmul();		//multiply sum_01 and h
+  fstp(sum_01);	//save the result
+  fld(sum_01);	//load sum_01
+  fld(vol);		//load vol
+  fmul();		//multiply
+  fstp(sum_01);	//save the final result into sum_01
+  stdout.put("Cone, area: ",sum_01, nl); //print the results
+  //mov(sum_01, ECX);
+
+  //cylinder, Volume = pi * r * r * h
+  //fstp(sum_02);
+  fld( r );		//load r
+  fld(st0);     //open and copy r to st0         
+  fmul();		//multiplying                
+  fstp(sum_02);	//save the result in sum_02;
+  fld(sum_02);	//load sum_02
+  fld(h);		//load the h value
+  fmul();		//muiltiply
+  fstp(sum_02);	//save the result
+  fld(sum_02);	//load sum_02
+  fld(pi);		//load pi value
+  fmul();		//multiply
+  fstp(sum_02);	//save final result
+  stdout.put("Cylinder, area: ",sum_02, nl, nl); //print the results
+  //mov(sum_02, EDX);
+
+
+  stdout.put( " r= ", r, nl, " b= ", b, nl, " h= ", h, nl );
+  EndProgram:
+
+end  Vol_finder_01;
+
+
+//NOTE the area for a pyramid will equal a number close to 1, but not 1
+//This makes it confusing when trying determine if the calculation was done right
+//example
+//stdout.put("Pyramid, area: ", sum, nl); //show the area of a pyramid
+//sum ==.999186....close to 1, but not exactly. the value can be useful
+//without the scientific notion, i believe the number would round up to 1
+//thank you for taking this into consideration

@@ -1,0 +1,19 @@
+#if( ! @defined( os_hhf ));
+?os_hhf := true;
+
+
+namespace os;
+
+	// Note: os.win32 and os.linux specify the operating system
+	//		 in use.  This file must be manually edited as appropriate
+	//		 for use under Windows or Linux so these constants contain
+	//		 the appropriate values.
+	
+	const
+		win32 := @global:true;
+		linux := !win32;
+		
+end os;
+	
+
+#endif

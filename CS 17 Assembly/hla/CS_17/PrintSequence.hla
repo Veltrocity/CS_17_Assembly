@@ -1,0 +1,76 @@
+//start the program
+
+program PrintSequence;
+
+//include the input output header
+
+#include( "stdio.hhf" );
+
+     //the int8 type variable to store the input
+
+     var n:      int8;
+     var val_01: int8 := 10;
+     var floop:  int8;
+
+    iOne : int8 := 1;
+    iFive : int8 := 5;
+    iTen : int8 := 10;
+
+     //prompt to enter the number
+     stdout.put( "Gimme a decimal value to use as n: " );
+     stdin.geti8(n);
+
+     
+
+    ForLoopInitialize:
+        mov( n, BX );
+        ForLoopTest:
+        cmp( BX, n);
+        jg ForLoopEnd;
+        ForLoopBody:
+        stdout.puti8( BX );
+        stdout.newln();
+        stdout.puti8(BX)
+        ForLoopIncrement:
+        inc( BX );
+        jmp ForLoopTest;
+        ForLoopEnd
+
+
+
+        ForLoopIncrement:
+        inc( BX );
+        jmp ForLoopTest;
+        ForLoopEnd:
+
+     //read the number
+
+     //stdin.geti8(n);
+
+     //the outer for loop to print each lines
+
+     #for (j := 1 to n
+
+    
+
+          //print the new line
+
+          //stdout.put(nl)
+
+         
+
+          //inner for loop to print each sequence
+
+          //#for(k := 1 to n)
+
+              //stdout.put(j);
+
+          //#endfor      
+
+     //#endfor;
+
+    
+
+#end program
+
+end PrintSequence;

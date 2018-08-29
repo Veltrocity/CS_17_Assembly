@@ -1,0 +1,329 @@
+
+#if( ! @defined( lists_hhf ));
+?lists_hhf := 1;
+
+#includeOnce( "hla.hhf" )
+
+type
+	node: 
+		class
+
+			var
+				Prev: pointer to node;
+				Next: pointer to node;
+
+			procedure create; @returns( "esi" );	@external;
+
+			// Whoever derives a class from node must
+			// supply the "destroy" method.  This function
+			// must free any storage associated with a given
+			// node.
+
+			method destroy;						abstract;
+
+		endclass;
+		
+
+
+			
+	list: 
+		class
+
+
+			procedure create; @returns( "esi" ); @external;
+
+			method destroy; 					@external;
+			method numNodes;  @returns("eax" );	@external;
+
+
+			/*****************/
+
+			method append_index
+			( 
+				var n:		node; 
+					posn:	dword 
+			);	@returns( "esi" );			@external;
+
+			method append_node
+			( 
+				var n:		node; 
+				var after:	node 
+			);	@returns( "esi" );			@external;
+			
+
+			method append_last
+			( 
+				var n:node 
+			);	@returns( "esi" );			@external;
+
+
+			// append-
+			//
+			//	This macro provide simulated "procedure overloading"
+			//	for the previous three procedures.
+			//
+			//	If there is only one parameter present, this macro
+			//	calls the list.append_last method.
+			//
+			//	If there are two parameters present, this macro
+			//	checks the type of the second parameter.  If that
+			//	parameter is a pointer or a class object, then
+			//	this macro calls the list.append_node method, otherwise
+			//	it calls the list.append_index method (and assumes that
+			//	the second parameter is an integer constant).
+
+			#macro append( args[] ):
+				funcName;
+
+				// Save the name of the class object (this gets wiped
+				// out quickly, so we need to save it now).
+
+				?funcName:string := @curObject;
+
+				// If there is only one parameter, call the
+				// list.append_last method.
+
+				#if( @elements( args ) = 1 )
+
+					@text( funcName + ".append_last" )( @text( args[0] ))
+
+
+				// If there are two parameters, check the type of
+				// the second parameter and call list.append_node
+				// if it's a class object (or pointer), otherwise
+				// call the list.append_index method.
+
+				#elseif
+				( 
+						@elements( args ) = 2
+					&	(
+								@pType( @text( args[1] )) = hla.ptClass
+							|	@pType( @text( args[1] )) = hla.ptPointer
+						)
+				)
+
+					@text( funcName + ".append_node" )
+					( 
+						@text( args[0] ),
+						@text( args[1] )
+					)
+
+				#elseif( @elements( args ) = 2 )
+
+					@text( funcName + ".append_index" )
+					(
+						@text( args[0] ),
+						@text( args[1] )
+					)
+
+				// If it's none of the above, emit an error message.
+
+				#else
+
+					#error( "Illegal call to list.append" )
+
+				#endif
+
+			#endmacro;
+
+
+
+
+			/*****************/
+
+
+			method insert_index
+			( 
+				var n:		node; 
+					posn:	dword 
+			);	@returns( "esi" );			@external;
+
+			method insert_node
+			( 
+				var n:		node; 
+				var before:	node 
+			);	@returns( "esi" );			@external;
+			
+
+			method insert_first
+			( 
+				var n:node 
+			);	@returns( "esi" );			@external;
+
+
+			// insert-
+			//
+			//	This macro provide simulated "procedure overloading"
+			//	for the previous three procedures.
+			//
+			//	If there is only one parameter present, this macro
+			//	calls the list.insert_first method.
+			//
+			//	If there are two parameters present, this macro
+			//	checks the type of the second parameter.  If that
+			//	parameter is a pointer or a class object, then
+			//	this macro calls the list.insert_node method, otherwise
+			//	it calls the list.insert_index method (and assumes that
+			//	the second parameter is an integer constant).
+
+			#macro insert( args[] ):
+				funcName;
+
+				// Save the name of the class object (this gets wiped
+				// out quickly, so we need to save it now).
+
+				?funcName:string := @curObject;
+
+				// If there is only one parameter, call the
+				// list.insert_first method.
+
+				#if( @elements( args ) = 1 )
+
+					@text( funcName + ".insert_first" )( @text( args[0] ))
+
+
+				// If there are two parameters, check the type of
+				// the second parameter and call list.insert_node
+				// if it's a class object (or pointer), otherwise
+				// call the list.insert_index method.
+
+				#elseif
+				( 
+						@elements( args ) = 2
+					&	(
+								@pType( @text( args[1] )) = hla.ptClass
+							|	@pType( @text( args[1] )) = hla.ptPointer
+						)
+				)
+
+					@text( funcName + ".insert_node" )
+					( 
+						@text( args[0] ),
+						@text( args[1] )
+					)
+
+				#elseif( @elements( args ) = 2 )
+
+					@text( funcName + ".insert_index" )
+					(
+						@text( args[0] ),
+						@text( args[1] )
+					)
+
+				// If it's none of the above, emit an error message.
+
+				#else
+
+					#error( "Illegal call to list.insert" )
+
+				#endif
+
+			#endmacro;
+
+
+
+
+			/*****************/
+
+
+			method delete_index( posn:dword );	@returns( "esi" );@external;
+			method delete_node( var n:node );	@returns( "esi" );@external;
+			method delete_first;				@returns( "esi" );@external;
+			method delete_last;					@returns( "esi" );@external;
+
+
+			// delete-
+			//
+			//	This macro provide simulated "procedure overloading"
+			//	for delete_index, delete_node, and delete_first.
+			//
+			//	If this macro has no parameters, it calls the
+			//	list.delete_first method.
+			//
+			//	If there is one parameter present, this macro
+			//	checks the type of that parameter.  If it is a 
+			//	pointer or a class object, then this macro calls 
+			//	the list.delete_node method, otherwise
+			//	it calls the list.delete_index method.
+
+			#macro delete( args[] ):
+				funcName;
+
+				// Save the name of the class object (this gets wiped
+				// out quickly, so we need to save it now).
+
+				?funcName:string := @curObject;
+
+				// If there is only one parameter, call the
+				// list.insert_first method.
+
+				#if( @elements( args ) = 0 )
+
+					@text( funcName + ".delete_first" )()
+
+
+				// If there are two parameters, check the type of
+				// the second parameter and call list.insert_node
+				// if it's a class object (or pointer), otherwise
+				// call the list.insert_index method.
+
+				#elseif
+				( 
+						@elements( args ) = 1
+					&	(
+								@pType( @text( args[0] )) = hla.ptClass
+							|	@pType( @text( args[0] )) = hla.ptPointer
+						)
+				)
+
+					@text( funcName + ".delete_node" )
+					( 
+						@text( args[0] )
+					)
+
+				#elseif( @elements( args ) = 1 )
+
+					@text( funcName + ".delete_index" )
+					(
+						@text( args[0] )
+					)
+
+				// If it's none of the above, emit an error message.
+
+				#else
+
+					#error( "Illegal call to list.delete" )
+
+				#endif
+
+			#endmacro;
+
+
+
+
+
+			method index( posn:dword );		@external;
+			iterator itemInList;			@external;
+
+
+			var
+				Head: 		pointer to node;
+				Tail: 		pointer to node;
+				Cnt:  		uns32;
+
+				// Make sure this class is an even multiple
+				// of four bytes long.  This must be the
+				// last field in this data structure.
+				// Note: Doesn't align work in classes now? (3/06/2001)
+				
+				#if( @CurOffset mod 4 <> 0 )
+
+					Padding: byte[ 4 - (@CurOffset mod 4) ];
+
+				#endif
+
+
+		endclass;
+				 
+#endif
+

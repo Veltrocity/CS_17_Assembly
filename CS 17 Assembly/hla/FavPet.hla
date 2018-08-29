@@ -1,0 +1,29 @@
+//   File:   FavPet
+//   Author: Austin Castellino
+//
+//  6\28\2018
+//
+//
+//   DESCRIPTION
+//
+//   Use Hla to code a program that displays my favorite pet by making output statments that uses 
+//	letters to display an image of the name of my favorite pet
+//	
+//
+//       FavPet
+//
+//   and get:
+//
+//       Hello, World of Assembly Language
+//
+//   as the output from the program.  The program just displays a short
+//   message.  Nothing more complicated.
+program FavPet;
+#include("stdlib.hhf" );
+begin FavPet;
+stdout.put( " 	C     A   TTT", nl );
+stdout.put( " C   A  A   T", nl );
+stdout.put( " C,   AAA", nl );
+stdout.put( "  C, ", nl );
+stdout.put( "    CC,", nl );
+end FavPet;

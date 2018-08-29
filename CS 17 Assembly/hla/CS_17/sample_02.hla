@@ -1,0 +1,42 @@
+// File: powersoftwo.hla
+program sample_02;
+#include( "stdlib.hhf" );
+static
+iPwrOf2: int32 := 1; // 2^0 = 1
+iExponent: int32 := 0; // exponent at the start is zero
+begin sample_02;
+// Print a start up banner.
+stdout.put( "Powers of 2: ", nl, nl );
+
+// This work is going to be repeated a bunch of times...
+// Soon, we'll learn how to loop in our code...
+stdout.put( "2**(", iExponent:1, ") = ", iPwrOf2:2, nl );
+// Double pwrOf2 to compute the next power of two.
+mov( iPwrOf2, eax );
+add( eax, eax );
+mov( eax, iPwrOf2 );
+// Increment the exponent
+mov( iExponent, ebx );
+add( 1, ebx );
+mov( ebx, iExponent );
+stdout.put( "2**(", iExponent:1, ") = ", iPwrOf2:2, nl );
+// Double pwrOf2 to compute the next power of two.
+mov( iPwrOf2, eax );
+add( eax, eax );
+mov( eax, iPwrOf2 );
+// Increment the exponent
+mov( iExponent, ebx );
+add( 1, ebx );
+mov( ebx, iExponent );
+stdout.put( "2**(", iExponent:1, ") = ", iPwrOf2:2, nl );
+// Double pwrOf2 to compute the next power of two.
+mov( iPwrOf2, eax );
+add( eax, eax );
+mov( eax, iPwrOf2 );
+// Increment the exponent
+mov( iExponent, ebx );
+add( 1, ebx );
+mov( ebx, iExponent );
+stdout.put( "2**(", iExponent:1, ") = ", iPwrOf2:2, nl );
+stdout.newln(); // nicely format with an ending newline
+end sample_02;

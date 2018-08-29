@@ -1,0 +1,58 @@
+//   File:   Quiz_01
+//   Author: Austin Castellino
+//
+//   Creation Date:  7/15/2018
+//
+//
+//   DESCRIPTION
+//
+//   to print out a string pattern by how long a user inputs the value for
+//
+//Gimme data: 12
+//12_13_11_14_10_15_9_16_8_17_7_18
+//
+//Gimme data: 3
+//3_4_2      
+//
+//   
+
+program testAus;
+
+#include( "stdlib.hhf" );
+
+ 
+var num: int32;
+var num_0: int32;
+
+begin testAus;
+        
+stdout.put( "Gimme Data n: ", nl );
+
+stdin.geti32();
+
+mov( eax, num);
+
+// Read number from user
+// Parse from 1 to that number
+        
+
+//mov( num, bl );
+    for (di := 1 to num)
+
+        stdout.put("_");
+        rand(num_0, ecx);
+        add(num, num_0);
+
+        rand(num_0, bh);
+
+//Print the pattern
+
+        for(dj := 1 to num)
+
+            stdout.put(num);
+
+        endfor                              
+
+    endfor;
+
+end testAus;

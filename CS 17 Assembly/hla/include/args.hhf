@@ -1,0 +1,27 @@
+
+#if( ! @defined( args_hhf ));
+
+?args_hhf := true;
+
+namespace arg;
+
+	procedure cmdLn; @returns( "eax" ); @external( "ARG_CMDLN" );
+	procedure a_cmdLn; @returns( "eax" ); @external( "ARG_A_CMDLN" );
+	procedure c; @returns( "eax" ); @external( "ARG_C" );
+	procedure v( index:uns32 ); @returns( "eax" ); @external( "ARG_V" );
+	procedure a_v( index:uns32 ); @returns( "eax" ); @external( "ARG_A_V" );
+	procedure delete( index:uns32 ); @external( "ARG_DELETE" );
+	procedure destroy; @external( "ARG_DESTROY" );
+
+	iterator args; @external( "ARG_ARGS" );
+
+	iterator  globalOptions( options:cset ); 
+		@external( "ARG_GLOBALOPTIONS" );
+
+	iterator  localOptions( start:uns32; options:cset ); 
+		@external( "ARG_LOCALOPTIONS" );
+
+end arg;
+
+#endif
+

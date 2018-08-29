@@ -1,0 +1,36 @@
+//   File:   Fee_cal
+//   Author: Austin Castellino
+//
+//   Creation Date:  7\9\2018
+//
+//
+//   DESCRIPTION
+//
+//   Program with HlA a Smc Fee calculator which calculate the amount paid for a semester. demonstrate use of loops and proper registers.
+//   Test numbers: '4c' = 688$ & 'CC'
+//
+//       
+//
+//   and get:
+//   Feed me(2 hex digits with the bits prsseeee): CC
+//   Fall Semester
+//   12 units
+//   CA Resident
+//   Parking
+//   Total Fees = $ 688
+//
+//   
+program Fee_cal;
+#include( "stdlib.hhf" );
+ static
+   myvalue : int8;
+
+   begin Fee_cal;
+
+   stdout.put( myValue );
+   
+
+   
+   end Fee_cal;
+
+   //Notes very tough without the multiplication. Interesting that the BL registers are being moved around. 

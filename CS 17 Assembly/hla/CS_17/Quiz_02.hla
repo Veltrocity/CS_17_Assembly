@@ -1,0 +1,70 @@
+//   File:   Quiz_02
+//   Author: Austin Castellino
+//
+//   Creation Date:  07/15/2018
+//
+//
+//   DESCRIPTION
+//
+//   Print a pattern and number of rows while getting input from the user
+//       
+//
+//   Feed Me: 3
+//  X
+// XX
+//XXX
+// 
+//
+//Feed Me: -6
+//
+//
+//Feed Me: 5
+//    X
+//   XX
+//  XXX
+// XXXX
+//XXXXX
+program Boxit;
+
+#include( "stdlib.hhf" );
+
+    var num: int32;
+    var space: int8;
+    var I: int32;
+    var N: int32;
+
+begin Boxit; 
+
+        // Read number from user
+
+        stdout.put( "Feed me: ", nl );
+        stdin.geti32();
+
+        mov( eax, num );
+
+
+        // Parse from 1 to that number
+
+        WhileLp: 
+        WhileLpTermination:
+            cmp( I, num );
+            jnl WhileLpDone;
+        WhileLpBody:
+            stdout.put(nl)
+            mov( 0, I );
+
+            WhileLp2: 
+            WhileLp2Termination: 
+            cmp( N, I);
+            jnl WhileLp2Done;
+            WhileLp2Body: 
+                stdout.put("X");
+                inc( N );
+            jmp WhileLP2;
+            WhileLp2Done;
+            inc( I );
+        jmp WhileLp;
+        WhileLpDone:
+
+
+end Boxit;

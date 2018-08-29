@@ -1,0 +1,23 @@
+
+#if( ! @defined( x86_hhf ));
+?x86_hhf := true;
+
+type
+	pushaRec:	record
+
+					ediOfs:dword;
+					esiOfs:dword;
+					ebpOfs:dword;
+					espOfs:dword;
+					ebxOfs:dword;
+					edxOfs:dword;
+					ecxOfs:dword;
+					eaxOfs:dword;
+
+				endrecord;
+
+
+
+
+#endif
+

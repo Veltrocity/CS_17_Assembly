@@ -1,0 +1,55 @@
+#if( ! @defined( mmap_hhf ));
+?mmap_hhf := true;
+
+
+// mmap-
+//		This class defines a memory-mapped file object.
+
+type
+	mmap:
+		class
+			const
+				private: text := "";
+				public:  text := "";
+
+			public var
+				filePtr:		dword;
+				endFilePtr:		dword;
+				fileSize:		dword;
+
+			private var
+				_handle_:		dword;
+				_filename_:		string;
+				_malloc_:		boolean;
+				_open_:			boolean;
+
+				_padding_:		word;		// Make vars a multiple of 4 bytes
+
+			public procedure create; @returns( "esi" );	
+					@external( "MMAP_CREATE" );
+
+			public method openNew( filename:string; maxSize:dword );
+					@external( "MMAP_OPENNEW" );
+
+			public method open( filename:string; Access:dword );
+					@external( "MMAP_OPEN" );
+
+			public method close;
+					@external( "MMAP_CLOSE" );
+
+			public method destroy;
+					@external( "MMAP_DESTROY" );
+
+			public method getFileName; @returns( "eax" );
+					@external( "MMAP_GETFILENAME" );
+
+			public method getOpen; @returns( "al" );
+					@external( "MMAP_GETOPEN" );
+
+			public method getMalloc; @returns( "al" );
+					@external( "MMAP_GETMALLOC" );
+			
+		endclass;
+
+
+#endif

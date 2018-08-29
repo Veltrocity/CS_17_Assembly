@@ -1,0 +1,76 @@
+program FPUTest;
+#include( "stdlib.hhf" );
+static
+    r : real32; // var r
+    b : real32; // var b
+    h : real32; //var h
+    pi :real32 := 3.14159; //created pi var to have the value of pi. some answers may vary
+    vol:real32 := 0.33333; //vol var is for calculating 1/3 without the need for division
+    sum:real32 := 0; 	   //sum var for pyramid area total	
+    sum_01:real32 := 0;	   //sum_01 for cone area total
+    sum_02:real32 := 0;    //sum_02 for cylinder area total
+
+begin FPUTest;
+
+  stdout.put("Please enter some numbers to compute the area of a pyramid, cone, cylinder: ", nl); //prompt and pre-text
+  stdout.put ("Enter an r: ");
+  stdin.get( r ); 				//get r
+  stdout.put ("Enter an b: ");
+  stdin.get( b ); 				//get b
+  stdout.put("Enter an h: ");
+  stdin.get( h ); 				//get h
+  //stdout.put(vol, nl, pi, nl);
+
+//compute area of a pryamid, Volume = 1 / 3 * b * h
+  finit();
+  fld( b );             // Load b, base
+  fld(vol);				//load vol, 0.33333
+  fmul();				//multiply b and vol
+  fstp(sum);			//save the value into sum for easy reference
+  fld(sum);				//load sum
+  fld( h );             // load h value
+  fmul();               // multiply sum and h
+  fstp( sum );			//save results to sum
+  stdout.put("Pyramid, Sum_00: ", sum, nl); //show the area of a pyramid
+  
+
+  //cone, Volume = 1/ 3 * pi * r * r h
+  fld(r);   //find r
+  fld(st0); //r * r
+  fmul();   // r * * r
+  fstp(sum_01); //save the results
+  fld(sum_01);  //load sum_01 
+  fld(pi);		//load pi value, 3.141590
+  fmul();		//multiply pi and sum_01
+  fstp(sum_01);	//save the result in sum_01
+  fld(sum_01);	//load sum_01
+  fld(h);		//load h
+  fmul();		//multiply sum_01 and h
+  fstp(sum_01);	//save the result
+  fld(sum_01);	//load sum
+  fld(vol);		//load vol
+  fmul();		//multiply
+  fstp(sum_01);	//save the final result into sum_01
+  stdout.put("Cone, Sum_01: ",sum_01, nl); //print the results
+
+  //cylinder, Volume = pi * r * r * h
+  //fstp(sum_02);
+  fld( r );		//load r
+  fld(st0);     //open and copy r to st0         
+  fmul();		//multiplying                
+  fstp(sum_02);	//save the result in sum_02;
+  fld(sum_02);	//load sum_02
+  fld(h);		//load the h value
+  fmul();		//muiltiply
+  fstp(sum_02);	//save the result
+  fld(sum_02);	//load sum_02
+  fld(pi);		//load pi value
+  fmul();		//multiply
+  fstp(sum_02);	//save final result
+  stdout.put("Cylinder, Sum_02: ",sum_02, nl, nl); //print the results
+
+
+  stdout.put( " r= ", r, nl, " b= ", b, nl, " h= ", h, nl );
+
+
+end FPUTest;

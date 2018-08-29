@@ -1,0 +1,118 @@
+
+#if( ! @defined( console_hhf ));
+?console_hhf := true;
+
+
+namespace console; @fast;
+
+
+const
+	black := 0;
+	red := 1;
+	green := 2;
+	yellow := 3;
+	blue := 4;
+	magenta := 5;
+	cyan := 6;
+	white := 7;
+	
+
+	procedure utoa( u:uns32 in eax; dest:dword in ecx ); 
+		@external( "console_utoa" );
+		
+	procedure home; 
+		@external( "CONSOLE_HOME" );
+		
+	procedure cls;
+		@external( "CONSOLE_HOME" );
+		
+	procedure clrToEOLN;
+		@external( "CONSOLE_CLRTOEOLN" );
+		
+	procedure clrToBOLN;
+		@external( "CONSOLE_CLRTOBOLN" );
+		
+	procedure clrLn;
+		@external( "CONSOLE_CLRLN" );
+		
+	procedure clrToEOScrn;
+		@external( "CONSOLE_CLRTOEOSCRN" );
+		
+	procedure clrToBOScrn;
+		@external( "CONSOLE_CLRTOBOSCRN" );
+		
+	procedure gotoxy( x:uns32; y:uns32 ); 
+		@external( "CONSOLE_GOTOXY" );
+	
+	procedure gotorc( row:uns32; column:uns32 );
+		@stdcall; 
+		@external( "CONSOLE_GOTOXY" );
+		
+	procedure up;
+		@external( "CONSOLE_UP" );
+		
+	procedure nup( n:uns32 );
+		@external( "CONSOLE_NUP" );
+		
+	procedure down;
+		@external( "CONSOLE_DOWN" );
+		
+	procedure ndown( n:uns32 );
+		@external( "CONSOLE_NDOWN" );
+		
+	procedure left;
+		@external( "CONSOLE_LEFT" );
+		
+	procedure nleft( n:uns32 );
+		@external( "CONSOLE_NLEFT" );
+		
+	procedure right;
+		@external( "CONSOLE_RIGHT" );
+		
+	procedure nright( n:uns32 );
+		@external( "CONSOLE_NRIGHT" );
+		
+	procedure scrollDn;
+		@external( "CONSOLE_SCROLLDN" );
+		
+	procedure scrollUp;
+		@external( "CONSOLE_SCROLLUP" );
+		
+	procedure setAttrs( foreground:uns32; background:uns32 );
+		@external( "CONSOLE_SETATTRS" );
+		
+	procedure deleteChar; 
+		@external( "CONSOLE_DELETECHAR" );
+		
+	procedure deleteChars( n:dword ); 
+		@external( "CONSOLE_DELETECHARS" );
+		
+	procedure deleteLine; 
+		@external( "CONSOLE_DELETELINE" );
+		
+	procedure deleteLines( n:dword ); 
+		@external( "CONSOLE_DELETELINES" );
+		
+	procedure insertChar; 
+		@external( "CONSOLE_INSERTCHAR" );
+		
+	procedure insertChars( n:dword ); 
+		@external( "CONSOLE_INSERTCHARS" );
+		
+	procedure insertLine; 
+		@external( "CONSOLE_INSERTLINE" );
+		
+	procedure insertLines( n:dword ); 
+		@external( "CONSOLE_INSERTLINES" );
+		
+	procedure saveCursor;
+		@external( "CONSOLE_SAVECURSOR" );
+		
+	procedure restoreCursor;
+		@external( "CONSOLE_RESTORECURSOR" );
+	
+
+end console;
+
+#endif
+

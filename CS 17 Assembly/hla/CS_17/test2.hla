@@ -1,0 +1,51 @@
+//   File:   test2
+//   Author: Austin Castellino
+//
+//  6\28\2018
+//
+//
+//   DESCRIPTION
+//
+//   Use Hla to code a program that displays my favorite pet by making output statments that uses 
+//	letters to display an image of the name of my favorite pet
+//	
+//
+//       FavPet
+//
+//   and get:
+//
+//       Hello, World of Assembly Language
+//
+//   as the output from the program.  The program just displays a short
+//   message.  Nothing more complicated.
+program test2;
+//Note match the program names with the program.
+#include("stdlib.hhf" );
+begin test2;
+
+ var num: int8;
+
+        // Read number from user
+
+        stdout.put( "Austin, Test", nl );
+
+        stdin.geti8(num);
+
+        // Parse from 1 to that number
+
+        for (di := 1 to num
+
+
+            stdout.put(nl)
+
+          // Print the pattern
+
+            for(dj := 1 to num)
+
+                stdout.put("X");
+
+            #endfor                              
+
+        #endfor;
+
+end test2;

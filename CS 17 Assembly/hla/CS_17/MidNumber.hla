@@ -1,0 +1,166 @@
+//   File:   MidNumber.hla
+//   Author: Austin Castellino
+//
+//   Creation Date:  july, 20, 2018
+//
+//
+//   DESCRIPTION
+//
+//   Demonstrate the use of recursion and the appropiate methods to program
+//   Make a program that compares 3 numbers and prints out the number in
+//   the middle. Also form a method that displays whats happens when 3
+//   numbers are the same. Test numbers: 33, 44, & 55;
+//
+//   Example
+//Feed Me X: 215
+//Feed Me Y: 480
+//Feed Me Z: 91
+//215 in the middle!
+//AL = 0
+//Feed Me X: 0
+//Feed Me Y: 0
+//Feed Me Z: 0
+//X and Y and Z are all equal!
+//AL = 1
+//
+
+program MidNumber;
+
+#include( "stdlib.hhf" );
+    static
+        val_01: int16 := 0; //three variables to check and get input from
+        val_02: int16 := 0;
+        val_03: int16 := 0;
+        temp_pad : int16;
+
+        procedure middle_num (x: int16; y: int16; z: int16); @nodisplay; @noframe;
+static
+
+        returnaddress: dword;
+        temp: int16; //temp var for padding in the stack.
+
+begin middle_num;
+
+    //Bring local vars to front of the stack
+    pop(returnaddress); //postioning vars in the stack
+    pop(temp);
+    pop(x); //checking to see if vars are populated
+    pop(y);
+    pop(z);
+    push(returnaddress);
+
+    //Keep BX
+    push(BX); //using 16 bit BX register
+
+    mov(x, BX); //add the address of Bx to x...x = BX
+    cmp(BX, y); //compare x and y... bx = x
+    jg XgreaterthanY; //new function is x greaterthan y
+    jl XlessthanY; //lessthan
+    je XequalY; //is x equal to y
+
+    XgreaterthanY: //programming a new function
+
+        mov(y, BX); //moving the BX value to var y...y = BX
+        cmp(BX, z); //compare y and z values
+        je noMiddle; //new function to determine no middle number
+        jg YgreaterthanZ; //new function to check y against z values
+
+        mov(x, BX); //move the x value to BX
+        cmp(BX, z); //compare BX and z values
+        je noMiddle; //if not, go to this code and say there's no mid
+        jg XgreaterthanZ; //checking to see if x is greaterthan z
+        mov(x, BX); //move x into BX
+        mov(0, AL); //have our AL register to 0 for boolean use
+        stdout.put(x, " is the middle number", nl);
+        stdout.newln(); 
+        jmp EndFunction;
+
+            YgreaterthanZ:
+            mov(y, BX); //checks y value against BX, x.
+            mov(0, AL); //if AL is 0, return false
+            stdout.put(y,  " is the middle number", nl);
+            //stdout.newln();
+            jmp EndFunction;
+
+            XgreaterthanZ:
+            mov(z, BX); //mov z into BX
+            mov(0, AL); //check if it false
+            stdout.put(z, " is the middle number", nl);
+            jmp EndFunction;
+
+        XlessthanY: // x lessthan y
+        mov(x, BX); //BX = x
+        cmp(BX, z); //compare bx and z, z == x
+        je noMiddle;
+        jg XgreaterthanZ2;
+
+        mov(y, BX); //mov y into BX
+        cmp(BX, z); //compare BX and Z, y == z
+        je noMiddle;
+        jg YgreaterthanZ2;
+
+        mov(y, BX); //mov y into BX
+        mov(0, AL); //checks the value of BX
+        stdout.put(y, " is the middle number", nl);
+        stdout.newln();
+        jmp EndFunction;
+
+            XgreaterthanZ2:
+            mov(x, BX); // move bx into x
+            mov(0, AL); //checks the true, false value of AL
+            stdout.put(x, " is the middle number", nl);
+            stdout.newln();
+            jmp EndFunction;
+
+            YgreaterthanZ2: 
+            mov(z, BX); // move z into bx
+            cmp(BX, z); //compare bx to z
+            je YequalZ;
+            jne noMiddle;
+
+        XequalY:
+        mov(y, BX); //y into bx
+        cmp(BX, z); //compare bx and z
+        je YequalZ;
+        jne noMiddle;
+
+            YequalZ:
+            stdout.put(" x, y, z are all equal ");
+            stdout.newln();
+            mov(1, AL); //when AL = 1, they are all equal
+            jmp EndFunction;
+
+        noMiddle:
+        mov(0, AL);  //when all numbers are the same, print below
+        stdout.put("There is no middle number");
+        stdout.newln();
+
+        EndFunction:
+        pop(BX);
+        ret();
+
+    end middle_num;
+
+Begin MidNumber;
+
+    stdout.put("Gimme a value for x: ");
+    stdin.get(val_01);
+    stdout.put("Gimme a value for y: ");
+    stdin.get(val_02);
+    stdout.put("Gimme a value for z: ");
+    stdin.get(val_03);
+
+    push(val_01);
+    push(val_02);
+    push(val_03);
+    push(temp_pad);
+
+    call middle_num;
+    stdout.put("AL = ");
+    stdout.puti8(AL);
+    stdout.newln();
+
+
+
+end MidNumber;
+
